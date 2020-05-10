@@ -1,0 +1,85 @@
+# Project specific
+generator/actual.svg
+generator/actual.pdf
+generator/test-qrbill.*
+examples/gradle_example/gradle_example.iml
+examples/maven_example/maven-example.iml
+
+#Angular
+**/node_modules/
+**/dist/
+**/tmp
+**/out-tsc
+
+#Gradle
+.gradle
+**/build/
+
+# Ignore Gradle GUI config
+gradle-app.setting
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+
+# Cache of project
+.gradletasknamecache
+
+# # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
+# gradle/wrapper/gradle-wrapper.properties
+
+
+# No IntelliJ files
+**/.idea/
+
+# Maven
+**/target/**
+
+# CMake
+cmake-build-debug/
+
+## Plugin-specific files:
+
+# IntelliJ
+**/out/
+
+# JIRA plugin
+atlassian-ide-plugin.xml
+
+# Crashlytics plugin (for Android Studio and IntelliJ)
+com_crashlytics_export_strings.xml
+crashlytics.properties
+crashlytics-build.properties
+fabric.properties
+
+#Visual Studio Code
+**/bin/
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+yarn-error.log
+testem.log
+/typings
+
+# System Files
+.DS_Store
+Thumbs.db
