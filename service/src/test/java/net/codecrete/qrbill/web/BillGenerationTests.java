@@ -6,70 +6,66 @@
 //
 package net.codecrete.qrbill.web;
 
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import net.codecrete.qrbill.web.model.BillFormat;
 import net.codecrete.qrbill.web.model.QrBill;
 import net.codecrete.qrbill.web.model.ValidationMessage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.startsWith;
 
 /**
  * Unit test for QR bill generation API (PDF and SVG)
  */
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@QuarkusTest
 @DisplayName("QR bill generation")
 class BillGenerationTests {
 
-    private final TestRestTemplate restTemplate;
-
-    BillGenerationTests(@Autowired TestRestTemplate template) {
-        restTemplate = template;
-    }
-
     @Test
     void svgQrBill() {
-
         QrBill bill = SampleData.createBill1();
-        byte[] response = restTemplate.postForObject("/bill/image", bill, byte[].class);
-
-        assertNotNull(response);
-        assertTrue(response.length > 1000);
-
-        String text = new String(response, StandardCharsets.UTF_8);
-        assertTrue(text.startsWith("<?xml"));
-        assertTrue(text.indexOf("<svg") > 0);
-        assertTrue(text.indexOf("Meierhans AG") > 0);
+        given()
+            .when()
+                .contentType(ContentType.JSON)
+                .body(bill)
+                .post("/bill/image")
+            .then()
+                .statusCode(200)
+                .contentType("application/svg+xml")
+                .body(startsWith("<?xml"))
+                .body(containsString("<svg"))
+                .body(containsString("Meierhans AG"));
     }
 
     @Test
     void pdfQrBill() {
-
         QrBill bill = SampleData.createBill1();
         bill.getFormat().setGraphicsFormat(BillFormat.GraphicsFormatEnum.PDF);
-        byte[] response = restTemplate.postForObject("/bill/image", bill, byte[].class);
 
-        assertNotNull(response);
-        assertTrue(response.length > 1000);
+        byte[] result = given()
+            .when()
+                .contentType(ContentType.JSON)
+                .body(bill)
+                .post("/bill/image")
+            .then()
+                .statusCode(200)
+                .contentType("application/pdf")
+                .extract().asByteArray();
 
-        String text = new String(response, 0, 8, StandardCharsets.UTF_8);
-        assertEquals("%PDF-1.4", text);
+        assertThat(result.length, greaterThan(1000));
+        String text = new String(result, 0, 8, StandardCharsets.UTF_8);
+        assertThat(text, equalTo("%PDF-1.4"));
     }
 
     @Test
@@ -77,15 +73,17 @@ class BillGenerationTests {
         QrBill bill = SampleData.createBill1();
         bill.getCreditor().setTown("city56789012345678901234567890123456");
 
-        byte[] response = restTemplate.postForObject("/bill/image", bill, byte[].class);
-
-        assertNotNull(response);
-        assertTrue(response.length > 1000);
-
-        String text = new String(response, StandardCharsets.UTF_8);
-        assertTrue(text.startsWith("<?xml"));
-        assertTrue(text.indexOf("<svg") > 0);
-        assertTrue(text.indexOf("font-size=\"10\">2100 city5678901234567890123456789012345</text>") > 0);
+        given()
+            .when()
+                .contentType(ContentType.JSON)
+                .body(bill)
+                .post("/bill/image")
+            .then()
+                .statusCode(200)
+                .contentType("application/svg+xml")
+                .body(startsWith("<?xml"))
+                .body(containsString("<svg"))
+                .body(containsString("font-size=\"10\">2100 city5678901234567890123456789012345</text>"));
     }
 
     @Test
@@ -93,14 +91,23 @@ class BillGenerationTests {
         QrBill bill = SampleData.createBill1();
         bill.getCreditor().setTown(null);
 
-        ValidationMessage[] response = restTemplate.postForObject("/bill/image", bill,
-                ValidationMessage[].class);
+        Response response = given()
+            .when()
+                .contentType(ContentType.JSON)
+                .body(bill)
+                .post("/bill/image")
+            .then()
+                .statusCode(422)
+                .contentType("application/json")
+                .extract().response();
 
-        assertNotNull(response);
-        assertEquals(1, response.length);
-        assertEquals(ValidationMessage.TypeEnum.ERROR, response[0].getType());
-        assertEquals("creditor.town", response[0].getField());
-        assertEquals("field_is_mandatory", response[0].getMessageKey());
+        ValidationMessage[] messages = JsonHelper.extract(response, ValidationMessage[].class);
+
+        assertThat(messages, notNullValue());
+        assertThat(messages.length, equalTo(1));
+        assertThat(messages[0].getType(), equalTo(ValidationMessage.TypeEnum.ERROR));
+        assertThat(messages[0].getField(), equalTo("creditor.town"));
+        assertThat(messages[0].getMessageKey(), equalTo("field_is_mandatory"));
     }
 
     @Test
@@ -125,27 +132,25 @@ class BillGenerationTests {
 
     @Test
     void languageFromHeaderDefault() {
-        testLanguageFromHeader(null, "Payment part");
+        testLanguageFromHeader("", "Payment part");
     }
 
     private void testLanguageFromHeader(String language, String textFragment) {
         QrBill bill = SampleData.createBill1();
         bill.setFormat(null);
 
-        HttpHeaders headers = new HttpHeaders();
-        if (language != null)
-            headers.setAcceptLanguage(Locale.LanguageRange.parse(language));
-
-        HttpEntity<QrBill> entity = new HttpEntity<>(bill, headers);
-        byte[] response = restTemplate.postForObject("/bill/image", entity, byte[].class);
-
-        assertNotNull(response);
-        assertTrue(response.length > 1000);
-
-        String text = new String(response, StandardCharsets.UTF_8);
-        assertTrue(text.startsWith("<?xml"));
-        assertTrue(text.indexOf("<svg") > 0);
-        assertTrue(text.contains(textFragment));
+        given()
+            .when()
+                .contentType(ContentType.JSON)
+                .header("Accept-Language", language)
+                .body(bill)
+                .post("/bill/image")
+            .then()
+                .statusCode(200)
+                .contentType("application/svg+xml")
+                .body(startsWith("<?xml"))
+                .body(containsString("<svg"))
+                .body(containsString(textFragment));
     }
 
     @Test
@@ -153,21 +158,20 @@ class BillGenerationTests {
         QrBill bill = SampleData.createBill1();
         bill.setFormat(null);
 
-        MediaType mediaType1 = new MediaType("text", "plain");
-        MediaType mediaType2 = new MediaType("application", "pdf");
-        List<MediaType> mediaTypes = new ArrayList<>(2);
-        mediaTypes.add(mediaType1);
-        mediaTypes.add(mediaType2);
+        byte[] result = given()
+            .when()
+                .contentType(ContentType.JSON)
+                .header("Accept", "text/plain, application/pdf")
+                .body(bill)
+                .post("/bill/image")
+            .then()
+                .statusCode(200)
+                .contentType("application/pdf")
+                .extract().asByteArray();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setAccept(mediaTypes);
-
-        HttpEntity<QrBill> entity = new HttpEntity<>(bill, headers);
-        byte[] response = restTemplate.postForObject("/bill/image", entity, byte[].class);
-
-        assertNotNull(response);
-        assertTrue(response.length > 1000);
-        assertTrue(response[0] == '%' && response[1] == 'P' && response[2] == 'D' && response[3] == 'F');
+        assertThat(result.length, greaterThan(1000));
+        String text = new String(result, 0, 8, StandardCharsets.UTF_8);
+        assertThat(text, equalTo("%PDF-1.4"));
     }
 
     @Test
@@ -175,11 +179,16 @@ class BillGenerationTests {
         QrBill bill = SampleData.createBill1();
         bill.setFormat(null);
 
-        byte[] response = restTemplate.postForObject("/bill/image", bill, byte[].class);
-
-        String text = new String(response, StandardCharsets.UTF_8);
-        assertTrue(text.startsWith("<?xml"));
-        assertTrue(text.indexOf("<svg") > 0);
-        assertTrue(text.contains("Payment part"));
+        given()
+            .when()
+                .contentType(ContentType.JSON)
+                .body(bill)
+                .post("/bill/image")
+            .then()
+                .statusCode(200)
+                .contentType("application/svg+xml")
+                .body(startsWith("<?xml"))
+                .body(containsString("<svg"))
+                .body(containsString("Payment part"));
     }
 }

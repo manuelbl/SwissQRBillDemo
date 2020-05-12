@@ -6,52 +6,55 @@
 //
 package net.codecrete.qrbill.web;
 
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import net.codecrete.qrbill.web.model.QrBill;
 import net.codecrete.qrbill.web.model.ValidationMessage;
 import net.codecrete.qrbill.web.model.ValidationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.startsWith;
 
 /**
  * Unit tests for bill data validation API
  */
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@QuarkusTest
 @DisplayName("Bill data validation")
 class ValidationTests {
-
-    private final TestRestTemplate restTemplate;
-
-    ValidationTests(@Autowired TestRestTemplate template) {
-        restTemplate = template;
-    }
 
     @Test
     void validBill() {
         QrBill bill = SampleData.createBill1();
 
-        ValidationResponse response = restTemplate.postForObject("/bill/validated", bill, ValidationResponse.class);
+        Response res = given()
+            .when()
+                .contentType(ContentType.JSON)
+                .body(bill)
+                .post("/bill/validated")
+            .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .extract().response();
 
-        assertNotNull(response);
-        assertTrue(response.getValid());
-        assertNull(response.getValidationMessages());
-        assertNotNull(response.getValidatedBill());
-        assertEquals(bill, response.getValidatedBill());
-        assertNotNull(response.getBillID());
-        assertTrue(response.getBillID().length() > 100);
-        assertNotNull(response.getQrCodeText());
-        assertTrue(response.getQrCodeText().length() > 100);
+        ValidationResponse response = JsonHelper.extract(res, ValidationResponse.class);
+
+        assertThat(response, notNullValue());
+        assertThat(response.getValid(), equalTo(true));
+        assertThat(response.getValidationMessages(), nullValue());
+        assertThat(response.getValidatedBill(), notNullValue());
+        assertThat(response.getValidatedBill(), equalTo(bill));
+        assertThat(response.getBillID(), notNullValue());
+        assertThat(response.getBillID().length(), greaterThan(100));
+        assertThat(response.getQrCodeText(), notNullValue());
+        assertThat(response.getQrCodeText().length(), greaterThan(100));
     }
 
     @Test
@@ -59,25 +62,34 @@ class ValidationTests {
         QrBill bill = SampleData.createBill1();
         bill.getCreditor().setTown("city56789012345678901234567890123456");
 
-        ValidationResponse response = restTemplate.postForObject("/bill/validated", bill, ValidationResponse.class);
+        Response res = given()
+            .when()
+                .contentType(ContentType.JSON)
+                .body(bill)
+                .post("/bill/validated")
+            .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .extract().response();
 
-        assertNotNull(response);
-        assertTrue(response.getValid());
-        assertNotNull(response.getValidationMessages());
-        assertEquals(1, response.getValidationMessages().size());
-        assertEquals(ValidationMessage.TypeEnum.WARNING, response.getValidationMessages().get(0).getType());
-        assertEquals("creditor.town", response.getValidationMessages().get(0).getField());
-        assertEquals("field_clipped", response.getValidationMessages().get(0).getMessageKey());
+        ValidationResponse response = JsonHelper.extract(res, ValidationResponse.class);
 
-        assertNotNull(response.getValidatedBill());
+        assertThat(response, notNullValue());
+        assertThat(response.getValid(), equalTo(true));
+        assertThat(response.getValidationMessages(), notNullValue());
+        assertThat(response.getValidationMessages().size(), equalTo(1));
+        assertThat(response.getValidationMessages().get(0).getType(), equalTo(ValidationMessage.TypeEnum.WARNING));
+        assertThat(response.getValidationMessages().get(0).getField(), equalTo("creditor.town"));
+        assertThat(response.getValidationMessages().get(0).getMessageKey(), equalTo("field_clipped"));
 
         bill.getCreditor().setTown("city5678901234567890123456789012345");
-        assertEquals(bill, response.getValidatedBill());
+        assertThat(response.getValidatedBill(), notNullValue());
+        assertThat(response.getValidatedBill(), equalTo(bill));
 
-        assertNotNull(response.getBillID());
-        assertTrue(response.getBillID().length() > 100);
-        assertNotNull(response.getQrCodeText());
-        assertTrue(response.getQrCodeText().length() > 100);
+        assertThat(response.getBillID(), notNullValue());
+        assertThat(response.getBillID().length(), greaterThan(100));
+        assertThat(response.getQrCodeText(), notNullValue());
+        assertThat(response.getQrCodeText().length(), greaterThan(100));
     }
 
     @Test
@@ -85,18 +97,30 @@ class ValidationTests {
         QrBill bill = SampleData.createBill1();
         bill.setCreditor(null);
 
-        ValidationResponse response = restTemplate.postForObject("/bill/validated", bill, ValidationResponse.class);
+        Response res = given()
+                .when()
+                .contentType(ContentType.JSON)
+                .body(bill)
+                .post("/bill/validated")
+                .then()
+                .statusCode(200)
+                .contentType(ContentType.JSON)
+                .extract().response();
 
-        assertNotNull(response);
-        assertFalse(response.getValid());
-        assertNotNull(response.getValidationMessages());
-        assertEquals(5, response.getValidationMessages().size());
+        ValidationResponse response = JsonHelper.extract(res, ValidationResponse.class);
+
+        assertThat(response, notNullValue());
+        assertThat(response.getValid(), equalTo(false));
+        assertThat(response.getValidationMessages(), notNullValue());
+        assertThat(response.getValidationMessages().size(), equalTo(5));
+
         for (ValidationMessage message : response.getValidationMessages()) {
-            assertEquals(ValidationMessage.TypeEnum.ERROR, message.getType());
-            assertTrue(message.getField().startsWith("creditor."));
-            assertEquals("field_is_mandatory", message.getMessageKey());
+            assertThat(message.getType(), equalTo(ValidationMessage.TypeEnum.ERROR));
+            assertThat(message.getField(), startsWith("creditor."));
+            assertThat(message.getMessageKey(), equalTo("field_is_mandatory"));
         }
-        assertNull(response.getBillID());
-        assertNull(response.getQrCodeText());
+
+        assertThat(response.getBillID(), nullValue());
+        assertThat(response.getQrCodeText(), nullValue());
     }
 }

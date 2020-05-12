@@ -4,10 +4,13 @@
 // Licensed under MIT License
 // https://opensource.org/licenses/MIT
 //
-package net.codecrete.qrbill.web.controller;
+package net.codecrete.qrbill.web.api;
 
 import net.codecrete.qrbill.web.model.BillFormat;
 
+/**
+ * Data class to generate bill ID
+ */
 public class BillPayload {
 
     private int version;

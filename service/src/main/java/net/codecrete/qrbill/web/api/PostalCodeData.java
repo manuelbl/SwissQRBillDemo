@@ -4,8 +4,9 @@
 // Licensed under MIT License
 // https://opensource.org/licenses/MIT
 //
-package net.codecrete.qrbill.web.controller;
+package net.codecrete.qrbill.web.api;
 
+import javax.enterprise.context.ApplicationScoped;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.zip.ZipInputStream;
 
+@ApplicationScoped
 public class PostalCodeData {
 
     private static final int MAX_SUGGESTED_ITEMS = 20;

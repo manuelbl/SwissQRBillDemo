@@ -4,7 +4,7 @@
 // Licensed under MIT License
 // https://opensource.org/licenses/MIT
 //
-package net.codecrete.qrbill.web.controller;
+package net.codecrete.qrbill.web.api;
 
 import net.codecrete.qrbill.generator.Bill;
 import net.codecrete.qrbill.generator.GraphicsFormat;
@@ -21,13 +21,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-class QrBillDTOConverter {
+class DtoConverter {
 
-    private QrBillDTOConverter() {
+    private DtoConverter() {
         // do not instantiate
     }
 
-    static QrBill toDTOQrBill(Bill bill) {
+    static QrBill toDtoQrBill(Bill bill) {
         if (bill == null)
             return null;
 

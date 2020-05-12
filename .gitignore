@@ -1,10 +1,3 @@
-# Project specific
-generator/actual.svg
-generator/actual.pdf
-generator/test-qrbill.*
-examples/gradle_example/gradle_example.iml
-examples/maven_example/maven-example.iml
-
 #Angular
 **/node_modules/
 **/dist/
@@ -30,6 +23,7 @@ gradle-app.setting
 
 # No IntelliJ files
 **/.idea/
+**/*.iml
 
 # Maven
 **/target/**

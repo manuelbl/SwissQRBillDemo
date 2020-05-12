@@ -1,108 +1,90 @@
 package net.codecrete.qrbill.web;
 
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import static io.restassured.RestAssured.given;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@QuarkusTest
 @DisplayName("Invalid requests")
 class InvalidRequestTests {
 
-    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-
-    @LocalServerPort
-    int randomServerPort;
-
     @Test
-    void testInvalidEnum() throws IOException {
-        Response response = postRequest("/bill/validated",
-                "{ \"format\": { \"language\": \"pl\" }, " +
+    void testInvalidEnum() {
+        given()
+            .when()
+                .contentType(ContentType.JSON)
+                .body("{ \"format\": { \"language\": \"pl\" }, " +
                         "\"amount\": 100.34, \"currency\": \"CHF\", " +
                         "\"account\": \"CH4431999123000889012\", \"creditor\": {" +
                         "\"name\": \"Meierhans AG\", \"street\": \"Bahnhofstrasse\", \"houseNo\": \"16\", " +
                         "\"postalCode\": \"2100\", \"town\": \"Irgendwo\", \"countryCode\": \"CH\" }, " +
-                        "\"reference\": \"RF18539007547034\" }"
-        );
-
-        assertEquals(400, response.code());
+                        "\"reference\": \"RF18539007547034\" }")
+                .post("/bill/validated")
+            .then()
+                .statusCode(400);
     }
-
     @Test
-    void testInvalidNumber1() throws IOException {
-        Response response = postRequest("/bill/validated",
-                "{ \"format\": { \"language\": \"pl\" }, " +
+    void testInvalidNumber1() {
+        given()
+            .when()
+                .contentType(ContentType.JSON)
+                .body("{ \"format\": { \"language\": \"pl\" }, " +
                         "\"amount\": abc, \"currency\": \"CHF\", " +
                         "\"account\": \"CH4431999123000889012\", \"creditor\": {" +
                         "\"name\": \"Meierhans AG\", \"street\": \"Bahnhofstrasse\", \"houseNo\": \"16\", " +
                         "\"postalCode\": \"2100\", \"town\": \"Irgendwo\", \"countryCode\": \"CH\" }, " +
-                        "\"reference\": \"RF18539007547034\" }"
-        );
-
-        assertEquals(400, response.code());
+                        "\"reference\": \"RF18539007547034\" }")
+                .post("/bill/validated")
+            .then()
+                .statusCode(400);
     }
 
     @Test
-    void testInvalidNumber2() throws IOException {
-        Response response = postRequest("/bill/validated",
-                "{ \"format\": { \"language\": \"pl\" }, " +
+    void testInvalidNumber2() {
+        given()
+            .when()
+                .contentType(ContentType.JSON)
+                .body("{ \"format\": { \"language\": \"pl\" }, " +
                         "\"amount\": \"abc\", \"currency\": \"CHF\", " +
                         "\"account\": \"CH4431999123000889012\", \"creditor\": {" +
                         "\"name\": \"Meierhans AG\", \"street\": \"Bahnhofstrasse\", \"houseNo\": \"16\", " +
                         "\"postalCode\": \"2100\", \"town\": \"Irgendwo\", \"countryCode\": \"CH\" }, " +
-                        "\"reference\": \"RF18539007547034\" }"
-        );
-
-        assertEquals(400, response.code());
+                        "\"reference\": \"RF18539007547034\" }")
+                .post("/bill/validated")
+            .then()
+                .statusCode(400);
     }
 
     @Test
-    void testInvalidJson() throws IOException {
-        Response response = postRequest("/bill/validated",
-                "{ \"language\": \"de\", \"amount\": \"100.34\", \"currency\": \"CHF\", [" +
+    void testInvalidJson() {
+        given()
+            .when()
+                .contentType(ContentType.JSON)
+                .body("{ \"language\": \"de\", \"amount\": \"100.34\", \"currency\": \"CHF\", [" +
                         "\"account\": \"CH4431999123000889012\", \"creditor\": {" +
                         "\"name\": \"Meierhans AG\", \"street\": \"Bahnhofstrasse\", \"houseNo\": \"16\", " +
                         "\"postalCode\": \"2100\", \"town\": \"Irgendwo\", \"countryCode\": \"CH\" }, " +
-                        "\"reference\": \"RF18539007547034\" }"
-        );
-
-        assertEquals(400, response.code());
+                        "\"reference\": \"RF18539007547034\" }")
+                .post("/bill/validated")
+            .then()
+                .statusCode(400);
     }
 
     @Test
-    void testInvalidUrl() throws IOException {
-        Response response = postRequest("/bill2/validated",
-                "{ \"language\": \"de\", \"amount\": \"100.34\", \"currency\": \"CHF\", " +
+    void testInvalidUrl() {
+        given()
+            .when()
+                .contentType(ContentType.JSON)
+                .body("{ \"language\": \"de\", \"amount\": \"100.34\", \"currency\": \"CHF\", " +
                         "\"account\": \"CH4431999123000889012\", \"creditor\": {" +
                         "\"name\": \"Meierhans AG\", \"street\": \"Bahnhofstrasse\", \"houseNo\": \"16\", " +
                         "\"postalCode\": \"2100\", \"town\": \"Irgendwo\", \"countryCode\": \"CH\" }, " +
-                        "\"reference\": \"RF18539007547034\" }"
-        );
-
-        assertEquals(404, response.code());
-    }
-
-    private Response postRequest(String relativeUrl, String body) throws IOException {
-        OkHttpClient client = new OkHttpClient();
-        RequestBody requestBody = RequestBody.create(JSON, body.getBytes(StandardCharsets.UTF_8));
-        Request request = new Request.Builder()
-                .url(String.format("http://localhost:%d/qrbill-api%s", randomServerPort, relativeUrl))
-                .method("POST", requestBody)
-                .build();
-
-        return client.newCall(request).execute();
+                        "\"reference\": \"RF18539007547034\" }")
+                .post("/bill/validated2")
+            .then()
+                .statusCode(404);
     }
 }

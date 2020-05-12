@@ -6,7 +6,7 @@
 //
 package net.codecrete.qrbill.web;
 
-import net.codecrete.qrbill.web.controller.PostalCodeData;
+import net.codecrete.qrbill.web.api.PostalCodeData;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
