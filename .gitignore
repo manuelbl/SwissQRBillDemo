@@ -1,3 +1,6 @@
+# Project specific
+service/.factorypath
+
 #Angular
 **/node_modules/
 **/dist/
