@@ -81,7 +81,7 @@ class BillWithIdTests {
                 .get("/bill/image/{billId}", response.getBillID())
             .then()
                 .statusCode(200)
-                .contentType("application/svg+xml")
+                .contentType("image/svg+xml")
                 .body(startsWith("<?xml"))
                 .body(containsString("<svg"))
                 .body(containsString(textInSvg));
@@ -95,7 +95,7 @@ class BillWithIdTests {
                 .get("/bill/image/{billId}", VALID_BILL_ID)
                 .then()
                 .statusCode(200)
-                .contentType("application/svg+xml")
+                .contentType("image/svg+xml")
                 .body(startsWith("<?xml"))
                 .body(containsString("<svg"))
                 .body(not(containsString("Croce")));

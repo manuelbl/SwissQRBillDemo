@@ -42,7 +42,7 @@ class BillGenerationTests {
                 .post("/bill/image")
             .then()
                 .statusCode(200)
-                .contentType("application/svg+xml")
+                .contentType("image/svg+xml")
                 .body(startsWith("<?xml"))
                 .body(containsString("<svg"))
                 .body(containsString("Meierhans AG"));
@@ -80,7 +80,7 @@ class BillGenerationTests {
                 .post("/bill/image")
             .then()
                 .statusCode(200)
-                .contentType("application/svg+xml")
+                .contentType("image/svg+xml")
                 .body(startsWith("<?xml"))
                 .body(containsString("<svg"))
                 .body(containsString("font-size=\"10\">2100 city5678901234567890123456789012345</text>"));
@@ -147,7 +147,7 @@ class BillGenerationTests {
                 .post("/bill/image")
             .then()
                 .statusCode(200)
-                .contentType("application/svg+xml")
+                .contentType("image/svg+xml")
                 .body(startsWith("<?xml"))
                 .body(containsString("<svg"))
                 .body(containsString(textFragment));
@@ -186,7 +186,7 @@ class BillGenerationTests {
                 .post("/bill/image")
             .then()
                 .statusCode(200)
-                .contentType("application/svg+xml")
+                .contentType("image/svg+xml")
                 .body(startsWith("<?xml"))
                 .body(containsString("<svg"))
                 .body(containsString("Payment part"));

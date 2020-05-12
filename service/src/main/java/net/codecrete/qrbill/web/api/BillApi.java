@@ -58,7 +58,7 @@ public class BillApi {
     @POST
     @Path("/image")
     @Consumes({"application/json"})
-    @Produces({"image/svg+xml", "application/pdf", "application/json", "application/json"})
+    @Produces({"image/svg+xml", "application/pdf", "application/json"})
     public Response generateBill(@NotNull @Valid QrBill qrBill, @Context HttpHeaders headers) {
         Bill bill = DtoConverter.fromDtoQrBill(qrBill);
         setFormatDefaults(bill, headers);
@@ -67,7 +67,7 @@ public class BillApi {
 
     @GET
     @Path("/image/{billID}")
-    @Produces({"image/svg+xml", "application/pdf", "application/json", "application/json"})
+    @Produces({"image/svg+xml", "application/pdf", "application/json"})
     public Response getBillImage(@PathParam("billID") String billID, @QueryParam("outputSize") String outputSize,
                                  @QueryParam("graphicsFormat") String graphicsFormat, @Context HttpHeaders headers) {
         Bill bill;
@@ -225,10 +225,11 @@ public class BillApi {
     }
 
     private static final MediaType MEDIA_TYPE_APPLICATION_PDF = new MediaType("application", "pdf");
+    private static final MediaType MEDIA_TYPE_IMAGE_SVG = new MediaType("image", "svg+xml");
 
     private GraphicsFormat graphicsFormatFromRequestHeader(HttpHeaders headers) {
         for (MediaType mediaType : headers.getAcceptableMediaTypes()) {
-            if (mediaType.isCompatible(MediaType.APPLICATION_SVG_XML_TYPE))
+            if (mediaType.isCompatible(MEDIA_TYPE_IMAGE_SVG))
                 return GraphicsFormat.SVG;
             if (mediaType.isCompatible(MEDIA_TYPE_APPLICATION_PDF))
                 return GraphicsFormat.PDF;
@@ -238,7 +239,7 @@ public class BillApi {
     }
 
     private static MediaType getContentType(GraphicsFormat graphicsFormat) {
-        return graphicsFormat == GraphicsFormat.SVG ? MediaType.APPLICATION_SVG_XML_TYPE : MEDIA_TYPE_APPLICATION_PDF;
+        return graphicsFormat == GraphicsFormat.SVG ? MEDIA_TYPE_IMAGE_SVG : MEDIA_TYPE_APPLICATION_PDF;
     }
 
     private Language languageFromRequestHeader(HttpHeaders headers) {
