@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 User=qrbill
-ExecStart=/usr/bin/java -jar /usr/share/qrbill/qrbill.jar
+ExecStart=/usr/bin/java -Dvertx.cacheDirBase=/tmp/vertx-cache-qrbill -jar /usr/share/qrbill/qrbill.jar
 SuccessExitStatus=143
 
 [Install]
