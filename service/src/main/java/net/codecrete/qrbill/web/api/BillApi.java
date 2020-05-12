@@ -1,3 +1,9 @@
+//
+// Swiss QR Bill Generator
+// Copyright (c) 2020 Manuel Bleichenbacher
+// Licensed under MIT License
+// https://opensource.org/licenses/MIT
+//
 package net.codecrete.qrbill.web.api;
 
 import net.codecrete.qrbill.generator.Bill;
@@ -186,24 +192,24 @@ public class BillApi {
     }
 
     private static OutputSize getOutputSize(String value) {
-        OutputSize ouputSize;
+        OutputSize outputSize;
         switch (value) {
             case "a4-portrait-sheet":
-                ouputSize = OutputSize.A4_PORTRAIT_SHEET;
+                outputSize = OutputSize.A4_PORTRAIT_SHEET;
                 break;
             case "qr-bill-only":
-                ouputSize = OutputSize.QR_BILL_ONLY;
+                outputSize = OutputSize.QR_BILL_ONLY;
                 break;
             case "qr-bill-with-horizontal-line":
-                ouputSize = OutputSize.QR_BILL_WITH_HORIZONTAL_LINE;
+                outputSize = OutputSize.QR_BILL_WITH_HORIZONTAL_LINE;
                 break;
             case "qr-code-only":
-                ouputSize = OutputSize.QR_CODE_ONLY;
+                outputSize = OutputSize.QR_CODE_ONLY;
                 break;
             default:
-                ouputSize = null;
+                outputSize = null;
         }
-        return ouputSize;
+        return outputSize;
     }
 
     private static GraphicsFormat getGraphicsFormat(String value) {

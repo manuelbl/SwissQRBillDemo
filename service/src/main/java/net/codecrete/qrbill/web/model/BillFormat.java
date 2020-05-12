@@ -1,3 +1,9 @@
+//
+// Swiss QR Bill Generator
+// Copyright (c) 2020 Manuel Bleichenbacher
+// Licensed under MIT License
+// https://opensource.org/licenses/MIT
+//
 package net.codecrete.qrbill.web.model;
 
 import javax.json.bind.adapter.JsonbAdapter;
