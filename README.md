@@ -4,6 +4,7 @@ This application serves as a demonstration of the Swiss QR Bill Generator librar
 
 - [Java library](https://github.com/manuelbl/SwissQRBill)
 - [.NET library](https://github.com/manuelbl/SwissQRBill.NET)
+- [Wiki](https://github.com/manuelbl/SwissQRBill/wiki)
 
 
 ## Demo App
@@ -15,5 +16,5 @@ This application serves as a demonstration of the Swiss QR Bill Generator librar
 
 The app consists of two components:
 
-- [JSON REST service](service)
-- [Angular UI](ui)
+- [JSON REST service](service) (Java MicroProfile, Quarkus, RESTEasy)
+- [Angular UI](ui) (Angular, Angular Material)
