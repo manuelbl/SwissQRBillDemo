@@ -6,7 +6,7 @@ service/.factorypath
 **/dist/
 **/tmp
 **/out-tsc
-ui2/
+
 #Gradle
 .gradle
 **/build/
