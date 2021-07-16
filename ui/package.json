@@ -3,9 +3,9 @@
   "version": "2.2.3",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --host 0.0.0.0 --base-href /qrbill/",
-    "serve-prod": "ng serve --prod --host 0.0.0.0 --base-href /qrbill/",
-    "build": "ng build --prod --base-href=/qrbill/",
+    "start": "ng serve",
+    "serve-prod": "ng serve --configuration production",
+    "build": "ng build --configuration production",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
