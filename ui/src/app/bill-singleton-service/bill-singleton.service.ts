@@ -12,7 +12,7 @@ import { ExampleService } from '../example-service/example.service';
   providedIn: 'root'
 })
 export class BillSingletonService {
-  private bill: QrBill;
+  private bill = new QrBill();
 
   constructor(private exampleService: ExampleService) {
     this.setBill(exampleService.getExamples()[0].bill);

@@ -5,9 +5,9 @@
 // https://opensource.org/licenses/MIT
 //
 export class ValidationMessage {
-  type: string;
-  field: string;
-  messageKey: string;
+  type?: string;
+  field?: string;
+  messageKey?: string;
   message?: string;
   messageParameters?: string[];
 }

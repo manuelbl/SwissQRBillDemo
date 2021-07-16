@@ -7,17 +7,17 @@
 export class Address {
   type?: string;
   name?: string;
-  addressLine1?: string | null;
-  addressLine2?: string | null;
-  street?: string | null;
-  houseNo?: string | null;
+  addressLine1?: string;
+  addressLine2?: string;
+  street?: string;
+  houseNo?: string;
   postalCode?: string;
   town?: string;
   countryCode?: string;
 
-  static clone(address: Address): Address {
+  static clone(address: Address | undefined): Address | undefined {
     if (!address) {
-      return null;
+      return undefined;
     }
 
     return {

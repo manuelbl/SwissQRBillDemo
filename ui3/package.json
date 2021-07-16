@@ -1,29 +1,23 @@
 {
-  "name": "ui",
-  "version": "2.2.3",
+  "name": "ui3",
+  "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --host 0.0.0.0 --base-href /qrbill/",
-    "serve-prod": "ng serve --prod --host 0.0.0.0 --base-href /qrbill/",
-    "build": "ng build --prod --base-href=/qrbill/",
-    "test": "ng test",
-    "lint": "ng lint",
-    "e2e": "ng e2e"
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
   },
   "private": true,
   "dependencies": {
     "@angular/animations": "~12.1.2",
-    "@angular/cdk": "^12.1.2",
     "@angular/common": "~12.1.2",
     "@angular/compiler": "~12.1.2",
     "@angular/core": "~12.1.2",
     "@angular/forms": "~12.1.2",
-    "@angular/material": "^12.1.2",
     "@angular/platform-browser": "~12.1.2",
     "@angular/platform-browser-dynamic": "~12.1.2",
     "@angular/router": "~12.1.2",
-    "@ngx-translate/core": "^13.0.0",
-    "@ngx-translate/http-loader": "^6.0.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.2.0",
     "zone.js": "~0.11.4"

@@ -4,7 +4,7 @@
 // Licensed under MIT License
 // https://opensource.org/licenses/MIT
 //
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ExampleService } from '../example-service/example.service';
 import { Example } from '../example-service/example';
 import { BillSingletonService } from '../bill-singleton-service/bill-singleton.service';
@@ -15,16 +15,14 @@ import { Router } from '@angular/router';
   templateUrl: './examples.component.html',
   styleUrls: ['./examples.component.css']
 })
-export class ExamplesComponent implements OnInit {
+export class ExamplesComponent {
   examples: Example[];
 
   constructor(
     private exampleService: ExampleService,
     private billSingleton: BillSingletonService,
     private router: Router
-  ) {}
-
-  ngOnInit() {
+  ) {
     this.examples = this.exampleService.getExamples();
   }
 

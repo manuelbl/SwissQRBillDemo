@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ui": {
+    "ui3": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -15,32 +15,23 @@
       },
       "root": "",
       "sourceRoot": "src",
-      "prefix": "qrbill",
+      "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/ui",
+            "outputPath": "dist/ui3",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
             "assets": [
-              "src/assets",
               "src/favicon.ico",
-              "src/favicon-16x16.png",
-              "src/favicon-32x32.png",
-              "src/android-chrome-192x192.png",
-              "src/android-chrome-512x512.png",
-              "src/apple-touch-icon.png",
-              "src/browserconfig.xml",
-              "src/mstile-150x150.png",
-              "src/safari-pinned-tab.svg",
-              "src/manifest.json"
+              "src/assets"
             ],
             "styles": [
-              "src/styles.scss",
-              "src/theme.scss"
+              "src/styles.scss"
             ],
             "scripts": []
           },
@@ -79,16 +70,12 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
-          "options": {
-            "browserTarget": "ui:build",
-            "proxyConfig": "proxy-dev.json"
-          },
           "configurations": {
             "production": {
-              "browserTarget": "ui:build:production"
+              "browserTarget": "ui3:build:production"
             },
             "development": {
-              "browserTarget": "ui:build:development"
+              "browserTarget": "ui3:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -96,7 +83,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "ui:build"
+            "browserTarget": "ui3:build"
           }
         },
         "test": {
@@ -106,22 +93,13 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
+            "inlineStyleLanguage": "scss",
             "assets": [
-              "src/assets",
               "src/favicon.ico",
-              "src/favicon-16x16.png",
-              "src/favicon-32x32.png",
-              "src/android-chrome-192x192.png",
-              "src/android-chrome-512x512.png",
-              "src/apple-touch-icon.png",
-              "src/browserconfig.xml",
-              "src/mstile-150x150.png",
-              "src/safari-pinned-tab.svg",
-              "src/manifest.json"
+              "src/assets"
             ],
             "styles": [
-              "src/styles.scss",
-              "src/theme.scss"
+              "src/styles.scss"
             ],
             "scripts": []
           }
@@ -129,5 +107,5 @@
       }
     }
   },
-  "defaultProject": "ui"
+  "defaultProject": "ui3"
 }

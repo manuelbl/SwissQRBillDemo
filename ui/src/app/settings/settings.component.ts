@@ -4,7 +4,7 @@
 // Licensed under MIT License
 // https://opensource.org/licenses/MIT
 //
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -12,12 +12,10 @@ import { TranslateService } from '@ngx-translate/core';
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.css']
 })
-export class SettingsComponent implements OnInit {
+export class SettingsComponent {
   language: string;
 
-  constructor(private translate: TranslateService) {}
-
-  ngOnInit() {
+  constructor(private translate: TranslateService) {
     this.language = this.translate.currentLang;
   }
 

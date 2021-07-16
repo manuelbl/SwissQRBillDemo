@@ -176,7 +176,6 @@ export class ExampleService {
     const e6 = new Example(
       {
         version: 'V1_0',
-        amount: null,
         currency: 'CHF',
         account: 'CH3709000000304442225',
         creditor: {
@@ -185,7 +184,6 @@ export class ExampleService {
           town: 'Bern',
           countryCode: 'CH'
         },
-        reference: null,
         unstructuredMessage: 'Donation to the Winterfest campaign',
         debtor: {},
         format: {

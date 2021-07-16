@@ -11,10 +11,10 @@ import { Injectable } from '@angular/core';
 /** Formatter for amount (thousand's separator and rounded to two fractional digits) */
 @Injectable()
 export class AmountFormatter implements InputFormatter<number> {
-  private language: string;
-  private systemDecimalSeparator: string;
-  private userDecimalSeparator: string;
-  private cleaner: RegExp;
+  private language!: string;
+  private systemDecimalSeparator!: string;
+  private userDecimalSeparator!: string;
+  private cleaner!: RegExp;
 
   constructor() {
     this.setLanguage('de-CH');
@@ -34,11 +34,11 @@ export class AmountFormatter implements InputFormatter<number> {
     this.cleaner = new RegExp('[^0-9' + this.userDecimalSeparator + ']', 'g');
   }
 
-  rawValue(formattedValue: string): number {
-    if (!formattedValue) {
-      return null;
-    }
+  rawValue(formattedValue: string): number | undefined {
     let cleanedValue = formattedValue.replace(this.cleaner, '');
+    if (cleanedValue === '') {
+      return undefined;
+    }
     if (this.userDecimalSeparator !== this.systemDecimalSeparator) {
       cleanedValue = cleanedValue.replace(
         this.userDecimalSeparator,
@@ -49,16 +49,16 @@ export class AmountFormatter implements InputFormatter<number> {
     return AmountFormatter.rounded(num);
   }
 
-  formattedValue(rawValue: number): string {
-    if (rawValue === undefined || rawValue === null) {
+  formattedValue(rawValue: number | undefined): string {
+    if (!rawValue) {
       return '';
     }
     const n = AmountFormatter.rounded(rawValue);
     return n.toLocaleString(this.language, { minimumFractionDigits: 2 });
   }
 
-  editValue(rawValue: number): string {
-    if (rawValue === undefined || rawValue === null) {
+  editValue(rawValue: number | undefined): string {
+    if (!rawValue) {
       return '';
     }
     const n = AmountFormatter.rounded(rawValue);

@@ -11,7 +11,11 @@ export class BillFormat {
   separatorType?: string;
   fontFamily?: string;
 
-  static clone(format: BillFormat): BillFormat {
+  static clone(format: BillFormat | undefined): BillFormat | undefined {
+    if (!format) {
+      return undefined;
+    }
+
     return {
         language: format.language,
         graphicsFormat: format.graphicsFormat,

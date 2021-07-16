@@ -15,7 +15,6 @@ import { AutofillMonitor } from '@angular/cdk/text-field';
 import {
   OnChanges,
   OnDestroy,
-  OnInit,
   DoCheck,
   Input,
   ElementRef,
@@ -24,38 +23,34 @@ import {
   Directive,
   NgZone,
   HostListener,
-  HostBinding
+  AfterViewInit,
+  Inject
 } from '@angular/core';
 import {
   NgControl,
   NgForm,
-  FormGroupDirective,
-  ControlValueAccessor
+  FormGroupDirective
 } from '@angular/forms';
 import {
   CanUpdateErrorState,
   ErrorStateMatcher,
-  mixinErrorState,
-  CanUpdateErrorStateCtor
+  mixinErrorState
 } from '@angular/material/core';
-import { MatFormFieldControl } from '@angular/material/form-field';
-import { MatAutocomplete } from '@angular/material/autocomplete';
+import { MatFormField, MatFormFieldControl, MAT_FORM_FIELD } from '@angular/material/form-field';
 import { Platform } from '@angular/cdk/platform';
 import { InputFormatter } from './input-formatter';
 import { Subject } from 'rxjs';
+import { MAT_INPUT_VALUE_ACCESSOR } from '@angular/material/input';
+import { MatAutocomplete } from '@angular/material/autocomplete';
 
 let nextUniqueId = 0;
 
-class MatInputBase {
+const _MatInputBase = mixinErrorState(class {
   constructor(public _defaultErrorStateMatcher: ErrorStateMatcher,
-              public _parentForm: NgForm,
-              public _parentFormGroup: FormGroupDirective,
-              /** @docs-private */
-              public ngControl: NgControl) {}
-}
-
-const _MatInputMixinBase: CanUpdateErrorStateCtor & typeof MatInputBase =
-    mixinErrorState(MatInputBase);
+    public _parentForm: NgForm,
+    public _parentFormGroup: FormGroupDirective,
+    public ngControl: NgControl) { }
+});
 
 /**
  * Directive that allows a native input to work inside a `MatFormField` and apply a formatting when input loses focus.
@@ -63,41 +58,49 @@ const _MatInputMixinBase: CanUpdateErrorStateCtor & typeof MatInputBase =
 @Directive({
   selector: `input[qrbillInputWithFormat]`,
   exportAs: 'qrbillInputWithFormat',
+  host: {
+    /**
+     * @breaking-change 8.0.0 remove .mat-form-field-autofill-control in favor of AutofillMonitor.
+     */
+    'class': 'mat-input-element mat-form-field-autofill-control',
+    '[class.mat-input-server]': '_isServer',
+    // Native input properties that are overwritten by Angular inputs need to be synced with
+    // the native input element. Otherwise property bindings for those don't work.
+    '[attr.id]': 'id',
+    // At the time of writing, we have a lot of customer tests that look up the input based on its
+    // placeholder. Since we sometimes omit the placeholder attribute from the DOM to prevent screen
+    // readers from reading it twice, we have to keep it somewhere in the DOM for the lookup.
+    '[attr.data-placeholder]': 'placeholder',
+    '[disabled]': 'disabled',
+    '[required]': 'required',
+    '[attr.readonly]': 'readonly || null',
+    // Only mark the input as invalid for assistive technology if it has a value since the
+    // state usually overlaps with `aria-required` when the input is empty and can be redundant.
+    '[attr.aria-invalid]': '(empty && required) ? null : errorState',
+    '[attr.aria-required]': 'required',
+  },
   providers: [
     { provide: MatFormFieldControl, useExisting: InputWithFormatDirective }
   ]
 })
-export class InputWithFormatDirective<T> extends _MatInputMixinBase
+export class InputWithFormatDirective<T> extends _MatInputBase
   implements
-    MatFormFieldControl<T>,
-    OnChanges,
-    OnInit,
-    OnDestroy,
-    DoCheck,
-    CanUpdateErrorState,
-    ControlValueAccessor {
+  MatFormFieldControl<T>,
+  OnChanges,
+  OnDestroy,
+  AfterViewInit,
+  DoCheck,
+  CanUpdateErrorState {
   protected _uid = `input-with-format-${nextUniqueId++}`;
-  protected _rawValue: T;
-  protected _previousNativeValue: string;
-
-  @HostBinding('class')
-  _baseClasses = 'mat-input-element mat-form-field-autofill-control';
-
-  /** The aria-describedby attribute on the input for improved a11y. */
-  @HostBinding('attr.aria-describedby') _ariaDescribedby: string;
-
-  @HostBinding('attr.aria-invalid')
-  get _ariaInvalid() {
-    return this.errorState;
-  }
-
-  @HostBinding('attr.aria-required')
-  get _ariaRequired() {
-    return this.required.toString();
-  }
+  protected _rawValue?: T;
+  protected _previousNativeValue: any;
+  private _previousPlaceholder: string | null = null;
 
   /** Whether the component is being rendered on the server. */
-  @HostBinding('class.mat-input-server') _isServer = false;
+  readonly _isServer: boolean;
+
+  /** Whether the input is inside of a form field. */
+  readonly _isInFormField: boolean;
 
   /**
    * Implemented as part of MatFormFieldControl.
@@ -107,7 +110,7 @@ export class InputWithFormatDirective<T> extends _MatInputMixinBase
   /**
    * Implemented as part of MatFormFieldControl.
    */
-  readonly stateChanges: Subject<void> = new Subject<void>();
+  override readonly stateChanges: Subject<void> = new Subject<void>();
 
   /**
    * Implemented as part of MatFormFieldControl.
@@ -123,7 +126,6 @@ export class InputWithFormatDirective<T> extends _MatInputMixinBase
    * Implemented as part of MatFormFieldControl.
    */
   @Input()
-  @HostBinding('disabled')
   get disabled(): boolean {
     if (this.ngControl && this.ngControl.disabled !== null) {
       return this.ngControl.disabled;
@@ -146,44 +148,38 @@ export class InputWithFormatDirective<T> extends _MatInputMixinBase
    * Implemented as part of MatFormFieldControl.
    */
   @Input()
-  @HostBinding('attr.id')
-  get id(): string {
-    return this._id;
-  }
-  set id(value: string) {
-    this._id = value || this._uid;
-  }
-  protected _id: string;
+  get id(): string { return this._id; }
+  set id(value: string) { this._id = value || this._uid; }
+  protected _id = '';
+
+  /**
+   * Implemented as part of MatFormFieldControl.
+   */
+  @Input() placeholder = '';
 
   /**
    * Implemented as part of MatFormFieldControl.
    */
   @Input()
-  @HostBinding('attr.placeholder')
-  placeholder = '';
-
-  /**
-   * Implemented as part of MatFormFieldControl.
-   */
-  @Input()
-  @HostBinding('required')
-  get required(): boolean {
-    return this._required;
-  }
-  set required(value: boolean) {
-    this._required = coerceBooleanProperty(value);
-  }
+  get required(): boolean { return this._required; }
+  set required(value: boolean) { this._required = coerceBooleanProperty(value); }
   protected _required = false;
 
   /** An object used to control when error messages are shown. */
-  @Input() errorStateMatcher: ErrorStateMatcher;
+  @Input() override errorStateMatcher!: ErrorStateMatcher;
 
   /**
    * Implemented as part of MatFormFieldControl.
+   * @docs-private
    */
+  @Input('aria-describedby') userAriaDescribedBy?: string;
+
+  /**
+  * Implemented as part of MatFormFieldControl.
+  */
   @Input()
   get value(): T {
-    return this._rawValue;
+    return this._rawValue!;
   }
   set value(value: T) {
     if (value !== this._rawValue) {
@@ -211,43 +207,44 @@ export class InputWithFormatDirective<T> extends _MatInputMixinBase
       this._rawValue
     );
   }
-  private _inputFormatter: InputFormatter<T> = null;
+  private _inputFormatter!: InputFormatter<T>;
 
   /** Whether the element is readonly. */
   @Input()
-  @HostBinding('readonly')
-  get readonly(): boolean {
-    return this._readonly || null;
-  }
-  set readonly(value: boolean) {
-    this._readonly = coerceBooleanProperty(value);
-  }
+  get readonly(): boolean { return this._readonly; }
+  set readonly(value: boolean) { this._readonly = coerceBooleanProperty(value); }
   private _readonly = false;
 
   /** Autocomplete element linked to the input field */
   @Input('qrBillAutoComplete')
-  get autoComplete(): MatAutocomplete {
+  get autoComplete(): MatAutocomplete | undefined {
     return this._matAutoComplete;
   }
-  set autoComplete(value: MatAutocomplete) {
+  set autoComplete(value: MatAutocomplete | undefined) {
     this._matAutoComplete = value;
   }
-  private _matAutoComplete: MatAutocomplete = null;
+  private _matAutoComplete?: MatAutocomplete = undefined;
+
 
   constructor(
     protected _elementRef: ElementRef<HTMLInputElement>,
     protected _platform: Platform,
-    /** @docs-private */
-    @Optional() @Self() public ngControl: NgControl,
+    @Optional() @Self() ngControl: NgControl,
     @Optional() _parentForm: NgForm,
     @Optional() _parentFormGroup: FormGroupDirective,
     _defaultErrorStateMatcher: ErrorStateMatcher,
+    @Optional() @Self() @Inject(MAT_INPUT_VALUE_ACCESSOR) inputValueAccessor: any,
     private _autofillMonitor: AutofillMonitor,
-    ngZone: NgZone
-  ) {
+    ngZone: NgZone,
+    // TODO: Remove this once the legacy appearance has been removed. We only need
+    // to inject the form-field for determining whether the placeholder has been promoted.
+    @Optional() @Inject(MAT_FORM_FIELD) private _formField?: MatFormField) {
+
     super(_defaultErrorStateMatcher, _parentForm, _parentFormGroup, ngControl);
 
-    this._previousNativeValue = this._elementRef.nativeElement.value;
+    const element = this._elementRef.nativeElement;
+
+    this._previousNativeValue = this.value;
 
     // Force setter to be called in case id was not specified.
     this.id = this.id;
@@ -263,7 +260,14 @@ export class InputWithFormatDirective<T> extends _MatInputMixinBase
       ngZone.runOutsideAngular(() => {
         _elementRef.nativeElement.addEventListener('keyup', (event: Event) => {
           const el = event.target as HTMLInputElement;
-          if (!el.value && !el.selectionStart && !el.selectionEnd) {
+
+          // Note: We specifically check for 0, rather than `!el.selectionStart`, because the two
+          // indicate different things. If the value is 0, it means that the caret is at the start
+          // of the input, whereas a value of `null` means that the input doesn't support
+          // manipulating the selection range. Inputs that don't support setting the selection range
+          // will throw an error so we want to avoid calling `setSelectionRange` on them. See:
+          // https://html.spec.whatwg.org/multipage/input.html#do-not-apply
+          if (!el.value && el.selectionStart === 0 && el.selectionEnd === 0) {
             // Note: Just setting `0, 0` doesn't fix the issue. Setting
             // `1, 1` fixes it for the first time that you type text and
             // then hold delete. Toggling to `1, 1` and then back to
@@ -276,9 +280,19 @@ export class InputWithFormatDirective<T> extends _MatInputMixinBase
     }
 
     this._isServer = !this._platform.isBrowser;
+    this._isInFormField = !!_formField;
   }
 
-  ngOnInit() {
+  _isNativeSelect() {
+    if (this._platform.isBrowser) {
+      this._autofillMonitor.monitor(this._elementRef.nativeElement).subscribe(event => {
+        this.autofilled = event.isAutofilled;
+        this.stateChanges.next();
+      });
+    }
+  }
+
+  ngAfterViewInit() {
     if (this._platform.isBrowser) {
       this._autofillMonitor.monitor(this._elementRef.nativeElement).subscribe(event => {
         this.autofilled = event.isAutofilled;
@@ -293,6 +307,7 @@ export class InputWithFormatDirective<T> extends _MatInputMixinBase
 
   ngOnDestroy() {
     this.stateChanges.complete();
+
     if (this._platform.isBrowser) {
       this._autofillMonitor.stopMonitoring(this._elementRef.nativeElement);
     }
@@ -310,6 +325,10 @@ export class InputWithFormatDirective<T> extends _MatInputMixinBase
     // we won't be notified when it changes (e.g. the consumer isn't using forms or they're
     // updating the value using `emitEvent: false`).
     this._dirtyCheckNativeValue();
+
+    // We need to dirty-check and set the placeholder attribute ourselves, because whether it's
+    // present or not depends on a query which is prone to "changed after checked" errors.
+    this._dirtyCheckPlaceholder();
   }
 
   /** Focuses the input. */
@@ -332,7 +351,7 @@ export class InputWithFormatDirective<T> extends _MatInputMixinBase
 
   /** Callback for the cases where the focused state of the input changes. */
   _focusChanged(isFocused: boolean) {
-    if (isFocused !== this.focused && !this.readonly) {
+    if (isFocused !== this.focused && (!this.readonly || !isFocused)) {
       this.focused = isFocused;
       this.stateChanges.next();
       if (isFocused) {
@@ -364,6 +383,21 @@ export class InputWithFormatDirective<T> extends _MatInputMixinBase
     // FormsModule or ReactiveFormsModule, because Angular forms also listens to input events.
   }
 
+  /** Does some manual dirty checking on the native input `placeholder` attribute. */
+  private _dirtyCheckPlaceholder() {
+    // If we're hiding the native placeholder, it should also be cleared from the DOM, otherwise
+    // screen readers will read it out twice: once from the label and once from the attribute.
+    // TODO: can be removed once we get rid of the `legacy` style for the form field, because it's
+    // the only one that supports promoting the placeholder to a label.
+    const placeholder = this._formField?._hideControlPlaceholder?.() ? null : this.placeholder;
+    if (placeholder !== this._previousPlaceholder) {
+      const element = this._elementRef.nativeElement;
+      this._previousPlaceholder = placeholder;
+      placeholder ?
+        element.setAttribute('placeholder', placeholder) : element.removeAttribute('placeholder');
+    }
+  }
+
   /** Does some manual dirty checking on the native input `value` property. */
   protected _dirtyCheckNativeValue() {
     const newValue = this._elementRef.nativeElement.value;
@@ -381,7 +415,7 @@ export class InputWithFormatDirective<T> extends _MatInputMixinBase
   /** Checks whether the input is invalid based on the native validation. */
   protected _isBadInput() {
     // The `validity` property won't be present on platform-server.
-    const validity = this._elementRef.nativeElement.validity;
+    let validity = (this._elementRef.nativeElement as HTMLInputElement).validity;
     return validity && validity.badInput;
   }
 
@@ -389,11 +423,8 @@ export class InputWithFormatDirective<T> extends _MatInputMixinBase
    * Implemented as part of MatFormFieldControl.
    */
   get empty(): boolean {
-    return (
-      !this._elementRef.nativeElement.value &&
-      !this._isBadInput() &&
-      !this.autofilled
-    );
+    return !this._elementRef.nativeElement.value && !this._isBadInput() &&
+      !this.autofilled;
   }
 
   /**
@@ -407,13 +438,20 @@ export class InputWithFormatDirective<T> extends _MatInputMixinBase
    * Implemented as part of MatFormFieldControl.
    */
   setDescribedByIds(ids: string[]) {
-    this._ariaDescribedby = ids.join(' ');
+    if (ids.length) {
+      this._elementRef.nativeElement.setAttribute('aria-describedby', ids.join(' '));
+    } else {
+      this._elementRef.nativeElement.removeAttribute('aria-describedby');
+    }
   }
 
   /**
    * Implemented as part of MatFormFieldControl.
    */
   onContainerClick() {
+    // Do not re-focus the input element if the element is already focused. Otherwise it can happen
+    // that someone clicks on a time input and the cursor resets to the "hours" field while the
+    // "minutes" field was actually clicked. See: https://github.com/angular/components/issues/12849
     if (!this.focused) {
       this.focus();
     }
@@ -431,12 +469,12 @@ export class InputWithFormatDirective<T> extends _MatInputMixinBase
     this.value = obj;
   }
 
-  private _onChange = (_: any) => {};
+  private _onChange = (_: any) => { };
   registerOnChange(fn: any): void {
     this._onChange = fn;
   }
 
-  private _onTouched = () => {};
+  private _onTouched = () => { };
   registerOnTouched(fn: any): void {
     this._onTouched = fn;
   }

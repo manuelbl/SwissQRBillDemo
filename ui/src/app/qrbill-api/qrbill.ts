@@ -12,7 +12,7 @@ export class QrBill {
   amount?: number;
   currency?: string;
   account?: string;
-  creditor: Address;
+  creditor?: Address;
   reference?: string;
   unstructuredMessage?: string;
   billInformation?: string;

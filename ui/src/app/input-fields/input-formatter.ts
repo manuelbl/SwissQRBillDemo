@@ -10,11 +10,11 @@
  */
 export interface InputFormatter<T> {
   /** Remove the formatting and return the raw value */
-  rawValue(formattedValue: string): T;
+  rawValue(formattedValue: string): T | undefined;
 
   /** Apply the formatting */
-  formattedValue(rawValue: T): string;
+  formattedValue(rawValue: T | undefined): string;
 
   /** Provide the value while input field is in focus (if different than formatted value) */
-  editValue?(rawValue: T): string;
+  editValue?(rawValue: T | undefined): string;
 }

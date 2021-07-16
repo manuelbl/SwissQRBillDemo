@@ -34,11 +34,11 @@ import { startWith, map } from 'rxjs/operators';
 export class BillDataComponent implements OnInit {
   public bill: QrBill;
   public billForm: FormGroup;
-  public isQRIBAN: boolean;
+  public isQRIBAN = false;
   public readonly refNoChanges: Subject<string> = new Subject<string>();
-  public refNoSuggestions: Observable<string[]>;
-  private validatedBill: QrBill;
-  private billID: string;
+  public refNoSuggestions?: Observable<string[]>;
+  private validatedBill?: QrBill;
+  private billID?: string;
   private validationInProgress = 0;
   private previewPressed = false;
 
@@ -55,9 +55,6 @@ export class BillDataComponent implements OnInit {
   ) {
     this.bill = billSingleton.getBill();
     this.checkAccountKind(this.bill);
-  }
-
-  ngOnInit() {
     // The below validations are only for a quick feedback. The real validation is performed server-side and
     // only server-side messages are displayed.
     this.billForm = new FormGroup(
@@ -69,18 +66,18 @@ export class BillDataComponent implements OnInit {
           ]
         }),
         creditor: new FormGroup({
-          name: new FormControl(this.bill.creditor.name, {
+          name: new FormControl(this.bill.creditor?.name, {
             validators: Validators.required
           }),
-          street: new FormControl(this.bill.creditor.street),
-          houseNo: new FormControl(this.bill.creditor.houseNo),
-          countryCode: new FormControl(this.bill.creditor.countryCode, {
+          street: new FormControl(this.bill.creditor?.street),
+          houseNo: new FormControl(this.bill.creditor?.houseNo),
+          countryCode: new FormControl(this.bill.creditor?.countryCode, {
             validators: [Validators.required, Validators.pattern('[A-Za-z]{2}')]
           }),
-          postalCode: new FormControl(this.bill.creditor.postalCode, {
+          postalCode: new FormControl(this.bill.creditor?.postalCode, {
             validators: Validators.required
           }),
-          town: new FormControl(this.bill.creditor.town, {
+          town: new FormControl(this.bill.creditor?.town, {
             validators: Validators.required
           })
         }),
@@ -96,26 +93,28 @@ export class BillDataComponent implements OnInit {
         unstructuredMessage: new FormControl(this.bill.unstructuredMessage),
         billInformation: new FormControl(this.bill.billInformation),
         format: this.formBuilder.group({
-          language: new FormControl(this.bill.format.language),
-          outputSize: new FormControl(this.bill.format.outputSize),
-          separatorType: new FormControl(this.bill.format.separatorType)
+          language: new FormControl(this.bill.format?.language),
+          outputSize: new FormControl(this.bill.format?.outputSize),
+          separatorType: new FormControl(this.bill.format?.separatorType)
         }),
         debtor: this.formBuilder.group({
-          name: new FormControl(this.bill.debtor.name),
-          street: new FormControl(this.bill.debtor.street),
-          houseNo: new FormControl(this.bill.debtor.houseNo),
-          countryCode: new FormControl(this.bill.debtor.countryCode, {
+          name: new FormControl(this.bill.debtor?.name),
+          street: new FormControl(this.bill.debtor?.street),
+          houseNo: new FormControl(this.bill.debtor?.houseNo),
+          countryCode: new FormControl(this.bill.debtor?.countryCode, {
             validators: Validators.pattern('[A-Za-z]{2}')
           }),
-          postalCode: new FormControl(this.bill.debtor.postalCode),
-          town: new FormControl(this.bill.debtor.town)
+          postalCode: new FormControl(this.bill.debtor?.postalCode),
+          town: new FormControl(this.bill.debtor?.town)
         })
       },
       {
         updateOn: 'blur'
       }
     );
+  }
 
+  ngOnInit() {
     // Server-side validation on each change
     this.billForm.valueChanges.subscribe(val => {
       const bill = this.getBill(val);
@@ -124,13 +123,17 @@ export class BillDataComponent implements OnInit {
     });
 
     this.translate.onLangChange.subscribe((params: LangChangeEvent) => {
-      this.validateServerSide(this.billForm.value);
+      this.validateServerSide(this.billForm?.value);
     });
 
     this.refNoSuggestions = this.refNoChanges.pipe(
       startWith(''),
       map(val => this.generateRefNos(val, this.isQRIBAN))
     );
+  }
+
+  refNoHasChanged(event: Event): void {
+    this.refNoChanges.next((event.target as HTMLInputElement).value);
   }
 
   // Send data to server for validation
@@ -155,16 +158,16 @@ export class BillDataComponent implements OnInit {
     this.clearServerSideErrors(this.billForm);
 
     const messages = response.validationMessages;
-    let controlPath: string; // control to receive the focus
+    let controlPath = ''; // control to receive the focus
     if (messages) {
       for (const msg of messages) {
         if (msg.type === 'Error') {
-          const control = this.billForm.get(msg.field);
+          const control = this.billForm.get(msg.field ?? '');
           if (!control) {
             continue; // certain fields such as 'addressLine2' are not shown
           }
-          if (!controlPath) {
-            controlPath = msg.field;
+          if (controlPath === '') {
+            controlPath = msg.field ?? '';
           }
           let errors = control.errors;
           if (!errors) {
@@ -202,9 +205,11 @@ export class BillDataComponent implements OnInit {
         this.clearServerSideErrors(control);
       } else if (control.hasError('serverSide')) {
         let errors = control.errors;
-        delete errors.serverSide;
-        if (Object.keys(errors).length === 0) {
-          errors = null;
+        if (!!errors) {
+          delete errors.serverSide;
+          if (Object.keys(errors).length === 0) {
+            errors = null;
+          }
         }
         control.setErrors(errors);
       }
@@ -299,6 +304,6 @@ export class BillDataComponent implements OnInit {
         }
       }
     }
-    return null;
+    return '';
   }
 }

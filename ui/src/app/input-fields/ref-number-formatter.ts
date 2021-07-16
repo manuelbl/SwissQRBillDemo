@@ -11,16 +11,16 @@ import { Injectable } from '@angular/core';
 /** Formatter for refrence numbers (ISO11659 creditor reference or QR reference number) */
 @Injectable()
 export class ReferenceNumberFormatter implements InputFormatter<string> {
-  rawValue(formattedValue: string) {
+  rawValue(formattedValue: string): string {
     if (!formattedValue) {
-      return null;
+      return '';
     }
     return formattedValue.replace(/\s/g, '');
   }
 
   formattedValue(rawValue: string): string {
     if (!rawValue) {
-      return null;
+      return '';
     }
 
     rawValue = rawValue.replace(/\s/g, '');

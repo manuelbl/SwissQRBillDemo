@@ -11,18 +11,15 @@ import { Injectable } from '@angular/core';
 /** Formatter for IBAN account number */
 @Injectable()
 export class IBANFormatter implements InputFormatter<string> {
-  rawValue(formattedValue: string) {
-    if (!formattedValue) {
-      return null;
-    }
+
+  rawValue(formattedValue: string): string | undefined {
     return formattedValue.replace(/\s/g, '');
   }
 
-  formattedValue(rawValue: string): string {
+  formattedValue(rawValue: string | undefined): string {
     if (!rawValue) {
-      return null;
+      return '';
     }
-
     rawValue = rawValue.replace(/\s/g, '');
 
     let formatted = '';
