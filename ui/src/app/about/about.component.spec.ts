@@ -34,7 +34,7 @@ describe('AboutComponent', () => {
     }).compileComponents();
   }));
 
-  beforeEach(inject([TranslateService], service => {
+  beforeEach(inject([TranslateService], (service: TranslateService) => {
     service.use('en');
     fixture = TestBed.createComponent(AboutComponent);
     component = fixture.componentInstance;

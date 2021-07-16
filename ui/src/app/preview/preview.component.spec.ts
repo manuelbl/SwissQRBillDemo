@@ -55,7 +55,7 @@ describe('PreviewComponent', () => {
   });
 
   it('should render UI', async(
-    inject([MAT_DIALOG_DATA], data => {
+    inject([MAT_DIALOG_DATA], (data: any) => {
       const compiled = fixture.debugElement.nativeElement;
       expect(compiled.querySelector('mat-dialog-content')).toBeTruthy();
       expect(compiled.querySelector('mat-dialog-actions')).toBeTruthy();

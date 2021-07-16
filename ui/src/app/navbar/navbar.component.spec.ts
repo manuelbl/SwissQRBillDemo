@@ -38,7 +38,7 @@ describe('NavbarComponent', () => {
     }).compileComponents();
   }));
 
-  beforeEach(inject([TranslateService], service => {
+  beforeEach(inject([TranslateService], (service: TranslateService) => {
     service.use('en');
     fixture = TestBed.createComponent(NavbarComponent);
     component = fixture.componentInstance;

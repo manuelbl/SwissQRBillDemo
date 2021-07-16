@@ -48,11 +48,11 @@ describe('BillSingletonService', () => {
     singletonService.setBill(bill);
 
     expect(singletonService.getBill() === bill).toBeFalsy(); // must be copy, not same instance
-    expect(singletonService.getBill().creditor.name).toEqual(
-      bill.creditor.name
+    expect(singletonService.getBill().creditor?.name).toEqual(
+      bill.creditor?.name
     );
-    expect(singletonService.getBill().creditor.postalCode).toEqual(
-      bill.creditor.postalCode
+    expect(singletonService.getBill().creditor?.postalCode).toEqual(
+      bill.creditor?.postalCode
     );
   });
 });

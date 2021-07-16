@@ -40,7 +40,7 @@ describe('ExampleService', () => {
     const examples = exampleService.getExamples();
     const example = examples[2];
     expect(example.bill.creditor).toBeTruthy();
-    expect(example.bill.creditor.name).toBeTruthy();
+    expect(example.bill.creditor?.name).toBeTruthy();
     expect(example.billID.length).toBeGreaterThanOrEqual(100);
   });
 });
