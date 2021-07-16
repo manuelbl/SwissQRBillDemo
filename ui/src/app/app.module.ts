@@ -46,7 +46,6 @@ export function createTranslateLoader(http: HttpClient) {
     ExamplesComponent,
     InputWithFormatDirective
   ],
-  entryComponents: [PreviewComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
