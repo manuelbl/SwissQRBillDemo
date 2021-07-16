@@ -150,12 +150,12 @@ export class InputWithFormatDirective<T> extends _MatInputBase
   @Input()
   get id(): string { return this._id; }
   set id(value: string) { this._id = value || this._uid; }
-  protected _id = '';
+  protected _id! : string;
 
   /**
    * Implemented as part of MatFormFieldControl.
    */
-  @Input() placeholder = '';
+  @Input() placeholder!: string;
 
   /**
    * Implemented as part of MatFormFieldControl.

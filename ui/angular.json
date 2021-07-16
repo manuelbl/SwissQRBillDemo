@@ -43,7 +43,8 @@
               "src/theme.scss"
             ],
             "scripts": [],
-            "baseHref": "/qrbill/"          },
+            "baseHref": "/qrbill/"
+          },
           "configurations": {
             "production": {
               "budgets": [
@@ -125,9 +126,21 @@
             ],
             "scripts": []
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }
   },
-  "defaultProject": "ui"
+  "defaultProject": "ui",
+  "cli": {
+    "defaultCollection": "@angular-eslint/schematics"
+  }
 }

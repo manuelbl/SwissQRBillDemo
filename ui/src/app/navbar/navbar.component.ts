@@ -4,15 +4,13 @@
 // Licensed under MIT License
 // https://opensource.org/licenses/MIT
 //
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'qrbill-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent {
   constructor() {}
-
-  ngOnInit() {}
 }
