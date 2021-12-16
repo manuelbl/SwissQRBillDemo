@@ -65,7 +65,7 @@ class BillGenerationTests {
 
         assertThat(result.length, greaterThan(1000));
         String text = new String(result, 0, 8, StandardCharsets.UTF_8);
-        assertThat(text, equalTo("%PDF-1.6"));
+        assertThat(text, equalTo("%PDF-1.4"));
     }
 
     @Test
@@ -171,7 +171,7 @@ class BillGenerationTests {
 
         assertThat(result.length, greaterThan(1000));
         String text = new String(result, 0, 8, StandardCharsets.UTF_8);
-        assertThat(text, equalTo("%PDF-1.6"));
+        assertThat(text, equalTo("%PDF-1.4"));
     }
 
     @Test
