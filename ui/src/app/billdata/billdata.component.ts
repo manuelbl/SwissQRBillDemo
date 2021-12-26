@@ -173,7 +173,7 @@ export class BillDataComponent implements OnInit {
           if (!errors) {
             errors = {};
           }
-          errors.serverSide = msg.message;
+          errors['serverSide'] = msg.message;
           control.setErrors(errors);
           if (msg.messageKey !== 'field_is_mandatory') {
             // Due to to dependency between 'account' and 'reference',
@@ -206,7 +206,7 @@ export class BillDataComponent implements OnInit {
       } else if (control.hasError('serverSide')) {
         let errors = control.errors;
         if (!!errors) {
-          delete errors.serverSide;
+          delete errors['serverSide'];
           if (Object.keys(errors).length === 0) {
             errors = null;
           }

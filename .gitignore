@@ -6,6 +6,7 @@ service/.factorypath
 **/dist/
 **/tmp
 **/out-tsc
+**/.angular
 
 #Gradle
 .gradle
