@@ -29,9 +29,12 @@ public class MessageLocalizer {
 
     public void translateMessages(List<ValidationMessage> messages, HttpHeaders headers) {
 
-        Locale locale = headers.getLanguage();
-        if (locale == null)
-        locale = defaultLocale;
+        List<Locale> locales = headers.getAcceptableLanguages();
+        Locale locale;
+        if (locales != null && !locales.isEmpty())
+            locale = locales.get(0);
+        else
+            locale = defaultLocale;
 
         for (ValidationMessage message : messages) {
             message.setMessage(getLocalMessage(message.getMessageKey(), message.getMessageParameters(), locale));
