@@ -107,7 +107,7 @@ class BillGenerationTests {
         assertThat(messages.length, equalTo(1));
         assertThat(messages[0].getType(), equalTo(ValidationMessage.TypeEnum.ERROR));
         assertThat(messages[0].getField(), equalTo("creditor.town"));
-        assertThat(messages[0].getMessageKey(), equalTo("field_is_mandatory"));
+        assertThat(messages[0].getMessageKey(), equalTo("field_value_missing"));
     }
 
     @Test

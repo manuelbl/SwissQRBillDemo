@@ -80,7 +80,7 @@ class ValidationTests {
         assertThat(response.getValidationMessages().size(), equalTo(1));
         assertThat(response.getValidationMessages().get(0).getType(), equalTo(ValidationMessage.TypeEnum.WARNING));
         assertThat(response.getValidationMessages().get(0).getField(), equalTo("creditor.town"));
-        assertThat(response.getValidationMessages().get(0).getMessageKey(), equalTo("field_clipped"));
+        assertThat(response.getValidationMessages().get(0).getMessageKey(), equalTo("field_value_clipped"));
 
         bill.getCreditor().setTown("city5678901234567890123456789012345");
         assertThat(response.getValidatedBill(), notNullValue());
@@ -117,7 +117,7 @@ class ValidationTests {
         for (ValidationMessage message : response.getValidationMessages()) {
             assertThat(message.getType(), equalTo(ValidationMessage.TypeEnum.ERROR));
             assertThat(message.getField(), startsWith("creditor."));
-            assertThat(message.getMessageKey(), equalTo("field_is_mandatory"));
+            assertThat(message.getMessageKey(), equalTo("field_value_missing"));
         }
 
         assertThat(response.getBillID(), nullValue());

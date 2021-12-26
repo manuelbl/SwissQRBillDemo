@@ -201,7 +201,7 @@ public class BillApi {
                 outputSize = OutputSize.QR_BILL_ONLY;
                 break;
             case "qr-bill-with-horizontal-line":
-                outputSize = OutputSize.QR_BILL_WITH_HORIZONTAL_LINE;
+                outputSize = OutputSize.QR_BILL_EXTRA_SPACE;
                 break;
             case "qr-code-only":
                 outputSize = OutputSize.QR_CODE_ONLY;
