@@ -42,7 +42,8 @@
         "en": "English",
         "de": "German",
         "fr": "French",
-        "it": "Italian"
+        "it": "Italian",
+        "rm": "Romansh"
     },
     "separator_lines": "Separator lines",
     "separator_type": {

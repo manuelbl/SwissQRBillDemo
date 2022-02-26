@@ -41,7 +41,8 @@
         "en": "Englisch",
         "de": "Deutsch",
         "fr": "Französisch",
-        "it": "Italienisch"
+        "it": "Italienisch",
+        "rm": "Romanisch"
     },
     "separator_lines": "Trennlinien",
     "separator_type": {
