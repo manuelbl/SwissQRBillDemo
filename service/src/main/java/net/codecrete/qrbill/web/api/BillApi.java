@@ -260,6 +260,8 @@ public class BillApi {
                 return Language.FR;
             if ("it".equals(language))
                 return Language.IT;
+            if ("rm".equals(language))
+                return Language.RM;
         }
 
         return null;

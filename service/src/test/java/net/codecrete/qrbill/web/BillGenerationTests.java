@@ -126,6 +126,11 @@ class BillGenerationTests {
     }
 
     @Test
+    void languageFromHeaderRM() {
+        testLanguageFromHeader("rm-CH, fr-CH, fr;q=0.9, en;q=0.8, de;q=0.7, *;q=0.5", "Part da pajamaint");
+    }
+
+    @Test
     void languageFromHeaderEN() {
         testLanguageFromHeader("en-US, en", "Payment part");
     }

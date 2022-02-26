@@ -23,7 +23,8 @@ public class BillFormat {
         DE,
         FR,
         IT,
-        EN
+        EN,
+        RM
     }
 
     @Provider

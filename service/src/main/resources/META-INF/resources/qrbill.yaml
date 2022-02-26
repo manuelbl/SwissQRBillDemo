@@ -33,7 +33,7 @@ info:
     characters are used, they are automatically replaced. The validation result contains warnings about
     truncations and replacements.
 
-  version: 3.0.0
+  version: 3.0.2
   license:
     name: "MIT License"
     url: "https://opensource.org/licenses/MIT"
@@ -239,6 +239,7 @@ components:
           - "fr"
           - "it"
           - "en"
+          - "rm"
         graphicsFormat:
           type: string
           description: "Graphics format of generated QR bill"
