@@ -31,7 +31,7 @@ class InvalidRequestTests {
         given()
             .when()
                 .contentType(ContentType.JSON)
-                .body("{ \"format\": { \"language\": \"pl\" }, " +
+                .body("{ \"format\": { \"language\": \"de\" }, " +
                         "\"amount\": abc, \"currency\": \"CHF\", " +
                         "\"account\": \"CH4431999123000889012\", \"creditor\": {" +
                         "\"name\": \"Meierhans AG\", \"street\": \"Bahnhofstrasse\", \"houseNo\": \"16\", " +
@@ -47,7 +47,7 @@ class InvalidRequestTests {
         given()
             .when()
                 .contentType(ContentType.JSON)
-                .body("{ \"format\": { \"language\": \"pl\" }, " +
+                .body("{ \"format\": { \"language\": \"fr\" }, " +
                         "\"amount\": \"abc\", \"currency\": \"CHF\", " +
                         "\"account\": \"CH4431999123000889012\", \"creditor\": {" +
                         "\"name\": \"Meierhans AG\", \"street\": \"Bahnhofstrasse\", \"houseNo\": \"16\", " +
