@@ -8,13 +8,13 @@
 /**
  * Formats the value displayed in a `InputWithFormatDirective` input field.
  */
-export interface InputFormatter<T> {
+export interface InputFormatter {
   /** Remove the formatting and return the raw value */
-  rawValue(formattedValue: string): T | undefined;
+  rawValue(formattedValue: string): any | undefined;
 
   /** Apply the formatting */
-  formattedValue(rawValue: T | undefined): string;
+  formattedValue(rawValue: any | undefined): string;
 
   /** Provide the value while input field is in focus (if different than formatted value) */
-  editValue?(rawValue: T | undefined): string;
+  editValue?(rawValue: any | undefined): string;
 }

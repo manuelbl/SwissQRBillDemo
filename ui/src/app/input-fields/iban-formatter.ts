@@ -10,23 +10,24 @@ import { Injectable } from '@angular/core';
 
 /** Formatter for IBAN account number */
 @Injectable()
-export class IBANFormatter implements InputFormatter<string> {
+export class IBANFormatter implements InputFormatter {
 
-  rawValue(formattedValue: string): string | undefined {
+  rawValue(formattedValue: string): any | undefined {
     return formattedValue.replace(/\s/g, '');
   }
 
-  formattedValue(rawValue: string | undefined): string {
+  formattedValue(rawValue: any | undefined): string {
     if (!rawValue) {
       return '';
     }
-    rawValue = rawValue.replace(/\s/g, '');
+    let rawString: string = String(rawValue);
+    rawString = rawString.replace(/\s/g, '').toUpperCase();
 
     let formatted = '';
-    const len = rawValue.length;
+    const len = rawString.length;
     for (let p = 0; p < len; p += 4) {
       const e = p + 4 <= len ? p + 4 : len;
-      formatted += rawValue.substring(p, p + 4);
+      formatted += rawString.substring(p, p + 4);
       if (e < len) {
         formatted += ' ';
       }

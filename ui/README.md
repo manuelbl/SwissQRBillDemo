@@ -1,6 +1,6 @@
 # QR Bill UI
 
-This project currently uses Angular 13 and Angular Material 13.
+This project currently uses Angular 14 and Angular Material 14.
 
 ## Development server
 
