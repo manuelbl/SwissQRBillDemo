@@ -6,9 +6,9 @@
 //
 import { Component, OnInit, NgZone } from '@angular/core';
 import {
-  FormControl,
-  FormGroup,
-  FormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  UntypedFormBuilder,
   Validators
 } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -33,7 +33,7 @@ import { startWith, map } from 'rxjs/operators';
 })
 export class BillDataComponent implements OnInit {
   public bill: QrBill;
-  public billForm: FormGroup;
+  public billForm: UntypedFormGroup;
   public isQRIBAN = false;
   public readonly refNoChanges: Subject<string> = new Subject<string>();
   public refNoSuggestions?: Observable<string[]>;
@@ -43,7 +43,7 @@ export class BillDataComponent implements OnInit {
   private previewPressed = false;
 
   constructor(
-    private formBuilder: FormBuilder,
+    private formBuilder: UntypedFormBuilder,
     private qrBillService: QrBillService,
     private dialog: MatDialog,
     private translate: TranslateService,
@@ -57,55 +57,55 @@ export class BillDataComponent implements OnInit {
     this.checkAccountKind(this.bill);
     // The below validations are only for a quick feedback. The real validation is performed server-side and
     // only server-side messages are displayed.
-    this.billForm = new FormGroup(
+    this.billForm = new UntypedFormGroup(
       {
-        account: new FormControl(this.bill.account, {
+        account: new UntypedFormControl(this.bill.account, {
           validators: [
             Validators.required,
             Validators.pattern('[A-Za-z0-9 ]{5,30}')
           ]
         }),
-        creditor: new FormGroup({
-          name: new FormControl(this.bill.creditor?.name, {
+        creditor: new UntypedFormGroup({
+          name: new UntypedFormControl(this.bill.creditor?.name, {
             validators: Validators.required
           }),
-          street: new FormControl(this.bill.creditor?.street),
-          houseNo: new FormControl(this.bill.creditor?.houseNo),
-          countryCode: new FormControl(this.bill.creditor?.countryCode, {
+          street: new UntypedFormControl(this.bill.creditor?.street),
+          houseNo: new UntypedFormControl(this.bill.creditor?.houseNo),
+          countryCode: new UntypedFormControl(this.bill.creditor?.countryCode, {
             validators: [Validators.required, Validators.pattern('[A-Za-z]{2}')]
           }),
-          postalCode: new FormControl(this.bill.creditor?.postalCode, {
+          postalCode: new UntypedFormControl(this.bill.creditor?.postalCode, {
             validators: Validators.required
           }),
-          town: new FormControl(this.bill.creditor?.town, {
+          town: new UntypedFormControl(this.bill.creditor?.town, {
             validators: Validators.required
           })
         }),
-        currency: new FormControl(this.bill.currency, {
+        currency: new UntypedFormControl(this.bill.currency, {
           validators: [Validators.required, Validators.pattern('[A-Za-z]{3}')]
         }),
-        amount: new FormControl(this.bill.amount, {
+        amount: new UntypedFormControl(this.bill.amount, {
           validators: [Validators.min(0), Validators.max(999999999.99)]
         }),
-        reference: new FormControl(this.bill.reference, {
+        reference: new UntypedFormControl(this.bill.reference, {
           validators: [Validators.pattern('[A-Za-z0-9 ]{5,40}')]
         }),
-        unstructuredMessage: new FormControl(this.bill.unstructuredMessage),
-        billInformation: new FormControl(this.bill.billInformation),
+        unstructuredMessage: new UntypedFormControl(this.bill.unstructuredMessage),
+        billInformation: new UntypedFormControl(this.bill.billInformation),
         format: this.formBuilder.group({
-          language: new FormControl(this.bill.format?.language),
-          outputSize: new FormControl(this.bill.format?.outputSize),
-          separatorType: new FormControl(this.bill.format?.separatorType)
+          language: new UntypedFormControl(this.bill.format?.language),
+          outputSize: new UntypedFormControl(this.bill.format?.outputSize),
+          separatorType: new UntypedFormControl(this.bill.format?.separatorType)
         }),
         debtor: this.formBuilder.group({
-          name: new FormControl(this.bill.debtor?.name),
-          street: new FormControl(this.bill.debtor?.street),
-          houseNo: new FormControl(this.bill.debtor?.houseNo),
-          countryCode: new FormControl(this.bill.debtor?.countryCode, {
+          name: new UntypedFormControl(this.bill.debtor?.name),
+          street: new UntypedFormControl(this.bill.debtor?.street),
+          houseNo: new UntypedFormControl(this.bill.debtor?.houseNo),
+          countryCode: new UntypedFormControl(this.bill.debtor?.countryCode, {
             validators: Validators.pattern('[A-Za-z]{2}')
           }),
-          postalCode: new FormControl(this.bill.debtor?.postalCode),
-          town: new FormControl(this.bill.debtor?.town)
+          postalCode: new UntypedFormControl(this.bill.debtor?.postalCode),
+          town: new UntypedFormControl(this.bill.debtor?.town)
         })
       },
       {
@@ -197,11 +197,11 @@ export class BillDataComponent implements OnInit {
   }
 
   // Remove the errors of type "serverSide"
-  private clearServerSideErrors(group: FormGroup) {
+  private clearServerSideErrors(group: UntypedFormGroup) {
     const controls = group.controls;
     for (const controlName of Object.keys(controls)) {
       const control = controls[controlName];
-      if (control instanceof FormGroup) {
+      if (control instanceof UntypedFormGroup) {
         this.clearServerSideErrors(control);
       } else if (control.hasError('serverSide')) {
         let errors = control.errors;
@@ -290,16 +290,16 @@ export class BillDataComponent implements OnInit {
   }
 
   private findFirstInvalidControl(
-    root: FormGroup = this.billForm,
+    root: UntypedFormGroup = this.billForm,
     rootPath: string = ''
   ): string {
     const controls = root.controls;
     for (const field of Object.keys(controls)) {
       const ctrl = controls[field];
       if (ctrl.invalid) {
-        if (ctrl instanceof FormGroup) {
+        if (ctrl instanceof UntypedFormGroup) {
           return this.findFirstInvalidControl(ctrl, rootPath + field + '.');
-        } else if (ctrl instanceof FormControl) {
+        } else if (ctrl instanceof UntypedFormControl) {
           return rootPath + field;
         }
       }
