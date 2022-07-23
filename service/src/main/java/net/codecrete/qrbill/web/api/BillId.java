@@ -56,14 +56,14 @@ public class BillId {
         byte[] encodedData;
         try (ByteArrayOutputStream buffer = new ByteArrayOutputStream();
              OutputStream intermediate = base64.wrap(buffer);
-             DeflaterOutputStream head = new DeflaterOutputStream(intermediate)) {
+             DeflaterOutputStream head = new DeflaterOutputStream(intermediate);
+             Jsonb jsonb = JsonbBuilder.create()) {
 
-            Jsonb jsonb = JsonbBuilder.create();
             jsonb.toJson(payload, head);
             head.flush();
             encodedData = buffer.toByteArray();
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e); // NOSONAR
         }
 
@@ -90,12 +90,12 @@ public class BillId {
         BillPayload payload;
         try (InputStream dataStream = new ByteArrayInputStream(encodedData);
              InputStream intermediate = base64.wrap(dataStream);
-             InflaterInputStream head = new InflaterInputStream(intermediate)) {
+             InflaterInputStream head = new InflaterInputStream(intermediate);
+             Jsonb jsonb = JsonbBuilder.create()) {
 
-            Jsonb jsonb = JsonbBuilder.create();
             payload = jsonb.fromJson(head, BillPayload.class);
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             return null; // invalid ID
         }
 
