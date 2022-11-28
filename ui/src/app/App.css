@@ -1,0 +1,31 @@
+#root {
+	min-height: 100vh;
+	background: #eceff1;
+}
+
+.light {
+	color: #1976d2;
+}
+
+.about-container {
+	background-color: white;
+	padding: 3rem 6rem;
+}
+
+.logo img {
+	width: 200px;
+	height: 200px;
+}
+
+.about {
+	margin: 0.3rem 0;
+}
+
+.qr-bill {
+	min-width: 793.7px;
+	min-height: 396.84px;
+}
+
+a.title img {
+	height: 26px;
+}

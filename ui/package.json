@@ -1,57 +1,56 @@
 {
   "name": "ui",
-  "version": "3.0.2",
-  "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "serve-prod": "ng serve --configuration production",
-    "build": "ng build --configuration production",
-    "test": "ng test",
-    "lint": "ng lint",
-    "e2e": "ng e2e",
-    "cypress:open": "cypress open",
-    "cypress:run": "cypress run"
-  },
-  "private": true,
+  "version": "0.1.0",
+  "homepage": "https://codecrete.net/qrbill",
   "dependencies": {
-    "@angular/animations": "^14.0.1",
-    "@angular/cdk": "^14.0.1",
-    "@angular/common": "^14.0.1",
-    "@angular/compiler": "^14.0.1",
-    "@angular/core": "^14.0.1",
-    "@angular/forms": "^14.0.1",
-    "@angular/material": "^14.0.1",
-    "@angular/platform-browser": "^14.0.1",
-    "@angular/platform-browser-dynamic": "^14.0.1",
-    "@angular/router": "^14.0.1",
-    "@ngx-translate/core": "^14.0.0",
-    "@ngx-translate/http-loader": "^7.0.0",
-    "rxjs": "~7.4.0",
-    "tslib": "^2.3.0",
-    "zone.js": "~0.11.4"
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@mui/icons-material": "^5.10.9",
+    "@mui/material": "^5.10.13",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^14.4.3",
+    "@types/jest": "^27.5.2",
+    "@types/lodash": "^4.14.189",
+    "@types/node": "^16.18.3",
+    "@types/react": "^18.0.25",
+    "@types/react-dom": "^18.0.8",
+    "http-proxy-middleware": "^2.0.6",
+    "i18next": "^22.0.6",
+    "i18next-browser-languagedetector": "^7.0.1",
+    "i18next-http-backend": "^2.0.1",
+    "lodash": "^4.17.21",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-i18next": "^12.0.0",
+    "react-router-dom": "^6.4.3",
+    "react-scripts": "5.0.1",
+    "typescript": "^4.8.4",
+    "web-vitals": "^2.1.4"
   },
-  "devDependencies": {
-    "@angular-devkit/build-angular": "^14.0.1",
-    "@angular-eslint/builder": "14.0.0-alpha.0",
-    "@angular-eslint/eslint-plugin": "14.0.0-alpha.0",
-    "@angular-eslint/eslint-plugin-template": "14.0.0-alpha.0",
-    "@angular-eslint/schematics": "14.0.0-alpha.0",
-    "@angular-eslint/template-parser": "14.0.0-alpha.0",
-    "@angular/cli": "^14.0.1",
-    "@angular/compiler-cli": "^14.0.1",
-    "@cypress/schematic": "^1.6.0",
-    "@types/jasmine": "~3.10.0",
-    "@types/node": "^12.11.1",
-    "@typescript-eslint/eslint-plugin": "5.3.0",
-    "@typescript-eslint/parser": "5.3.0",
-    "cypress": "latest",
-    "eslint": "^8.2.0",
-    "jasmine-core": "~3.10.0",
-    "karma": "~6.3.14",
-    "karma-chrome-launcher": "~3.1.0",
-    "karma-coverage": "~2.1.0",
-    "karma-jasmine": "~4.0.0",
-    "karma-jasmine-html-reporter": "~1.7.0",
-    "typescript": "~4.7.3"
-  }
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "license": "MIT"
 }

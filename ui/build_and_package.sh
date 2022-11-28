@@ -1,5 +1,4 @@
 #!/bin/sh
-rm -rf dist
-npm run build
-cd dist
-zip qrbill-ui.zip -r ui
+rm -rf build
+yarn build
+zip qrbill-ui.zip -r build

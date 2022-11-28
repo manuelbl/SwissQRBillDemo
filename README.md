@@ -9,7 +9,7 @@ This application serves as a demonstration of the Swiss QR Bill Generator librar
 
 ## Demo App
 
-[Try the app](https://www.codecrete.net/qrbill/bill)
+[Try the app](https://www.codecrete.net/qrbill)
 
 
 ## Components
@@ -17,4 +17,4 @@ This application serves as a demonstration of the Swiss QR Bill Generator librar
 The app consists of two components:
 
 - [JSON REST service](service) (Java MicroProfile, Quarkus, RESTEasy)
-- [Angular UI](ui) (Angular, Angular Material)
+- [React UI](ui) (React, MUI Material UI)

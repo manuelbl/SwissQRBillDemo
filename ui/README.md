@@ -1,31 +1,47 @@
 # QR Bill UI
 
-This project currently uses Angular 14 and Angular Material 14.
+This project uses React 18, React Router 6, Typescript 4.8, MUI 5.4 and yarn.
 
-## Development server
 
-Run `npm start` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+## Development mode
 
-The app expects the QR Bill service to be running on http://localhost:8081 (also see `proxy-dev.json`). 
+To run the app in development mode, type:
 
-## Code scaffolding
+```
+yarn start
+```
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+The app should automatically open in your browser. If not, open [http://localhost:3000](http://localhost:3000).
 
-## Build
+If you make changes to the source code, the app will automatically reload.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+In order to properly work, the [REST service](../service/) should be running (on port 8081).
 
-The gradle script uses the same command. It can be run with `gradle build` or `gradle :ui:build` (from the parent directory). 
 
-## Running unit tests
+## Unit tests
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io). The QR Bill service does not need to be running. Some 404 errors will appear in the output. They are caused by SVG images that cannot be loaded; they can be ignored as they do not affect the tests.
+Unit tests can be run with:
 
-## Running end-to-end tests
+```
+yarn test
+```
 
-To exeute the end-to-end tests via [Protractor](http://www.protractortest.org/), first start the QR Bill service and then execute `npm run e2e`. The end-to-end test will start a development server automatically.
 
-## Further help
+## Production build
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+To create the production version of the app, run:
+
+```
+yarn build
+```
+
+The result will be in the `build` folder.
+
+
+## URL structure
+
+The app is built to be run in the subpath `/qrbill` with the REST service at `/qrbill-api`.
+
+In development mode, the development server will redirect URLs starting with `http://localhost:3000/qrbill-api/` to `http://localhost:8081/qrbill-api/`. Additionally, for a smooth startup, the URL `http://localhost:3000/` is redirected to `http://localhost:3000/qrbill/`.
+
+The relevant code can be found in [setupProxy.js](setupProxy.js).
