@@ -6,9 +6,7 @@
  */
 
 import { FieldFormatter } from './field-formatter';
-import { formatIBAN, formatISOReference, formatQRReference, whiteSpaceRemoved } from './payments';
-import { Address } from "../qrbill-api/address";
-import { BillFormat } from "../qrbill-api/bill-format";
+import { formatIBAN, formatISOReference, formatQRReference, nonAlnumRemoved, whiteSpaceRemoved, whiteSpaceRemovedAndUpperCase } from './payments';
 import { QrBill } from "../qrbill-api/qrbill";
 import _ from 'lodash';
 
@@ -30,48 +28,18 @@ export function updateBillField(bill: QrBill, path: string, value: any): QrBill 
   return bill;
 }
 
-export function cloneAddress(address: Address | undefined): Address | undefined {
-  if (!address)
-    return undefined;
-
-  return {
-    type: address.type,
-    name: address.name,
-    addressLine1: address.addressLine1,
-    addressLine2: address.addressLine2,
-    street: address.street,
-    houseNo: address.houseNo,
-    postalCode: address.postalCode,
-    town: address.town,
-    countryCode: address.countryCode
-  };
-}
-
-export function cloneFormat(format: BillFormat | undefined): BillFormat | undefined {
-  if (!format)
-    return undefined;
-
-  return {
-    language: format.language,
-    graphicsFormat: format.graphicsFormat,
-    outputSize: format.outputSize,
-    separatorType: format.separatorType,
-    fontFamily: format.fontFamily
-  };
-}
-
 export function cloneBill(bill: QrBill): QrBill {
   return {
     version: bill.version,
     amount: bill.amount,
     currency: bill.currency,
     account: bill.account,
-    creditor: cloneAddress(bill.creditor),
+    creditor: bill.creditor !== undefined ? Object.assign({}, bill.creditor) : undefined,
     reference: bill.reference,
     unstructuredMessage: bill.unstructuredMessage,
     billInformation: bill.billInformation,
-    debtor: cloneAddress(bill.debtor),
-    format: cloneFormat(bill.format)
+    debtor: bill.debtor !== undefined ? Object.assign({}, bill.debtor) : undefined,
+    format: bill.format !== undefined ? Object.assign({}, bill.format) : undefined,
   };
 }
 
@@ -91,13 +59,22 @@ export const ibanFormatter = new IBANFormatter();
 class ReferenceFormatter implements FieldFormatter {
   formattedValue(rawValue: any): string {
 
-    rawValue = whiteSpaceRemoved(rawValue.toString().toUpperCase());
+    if (rawValue === undefined)
+      return '';
+      
+    let cleanedValue = whiteSpaceRemovedAndUpperCase(rawValue.toString());
 
-    return rawValue.startsWith('RF') ? formatISOReference(rawValue) : formatQRReference(rawValue);
+    if (cleanedValue.startsWith('RF'))
+      return formatISOReference(rawValue);
+    
+    if (/^\d+$/.test(cleanedValue))
+      return formatQRReference(rawValue);
+
+    return rawValue.toString().trim();
   }
 
   rawValue(formattedValue: string): any {
-    return whiteSpaceRemoved(formattedValue.toUpperCase());
+    return whiteSpaceRemoved(formattedValue);
   }
 }
 
