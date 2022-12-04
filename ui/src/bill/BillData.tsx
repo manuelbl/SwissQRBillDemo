@@ -111,8 +111,9 @@ const BillData: React.FC<BillDataProps> = props => {
   return (
     <div>
 
-      {serverError !== undefined &&
+      {serverError !== undefined ?
         <Alert severity="warning" sx={{ marginBottom: '1rem' }}>{t('connection_error', { err: serverError })}</Alert>
+        : null
       }
 
       <form onSubmit={(event) => { event.preventDefault(); openPreview(); }}>
@@ -341,20 +342,20 @@ const ReferenceAutoComplete: React.FC<ReferenceAutoCompleteProps> = props => {
   }
 
   return (
-    <Autocomplete freeSolo
-      value={editValue}
+    <Autocomplete freeSolo disableClearable
+      inputValue={editValue}
       options={options}
       onFocus={() => setEditValue(formattedValue)}
-      onChange={(_, value) => setEditValue(value ?? '')}
+      onInputChange={(_, value) => { setEditValue(value); updateOptions(value); }}
       onBlur={onBlur}
 
-      renderInput={(params) => (
+      renderInput={params => (
         <TextField
           {...params}
           id="reference"
-          onChange={(e) => { setEditValue(e.target.value); updateOptions(e.target.value); }}
           error={errorMessages?.reference !== undefined} helperText={errorMessages?.reference}
-          fullWidth label={t(isQRIBAN(account) ? 'reference_qr' : 'reference_iso')} variant="outlined" size="small" />
+          label={t(isQRIBAN(account) ? 'reference_qr' : 'reference_iso')}
+          fullWidth variant="outlined" size="small" />
       )}
 
       renderOption={(props, option) => {
