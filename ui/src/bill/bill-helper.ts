@@ -6,7 +6,7 @@
  */
 
 import { FieldFormatter } from './field-formatter';
-import { formatIBAN, formatISOReference, formatQRReference, nonAlnumRemoved, whiteSpaceRemoved, whiteSpaceRemovedAndUpperCase } from './payments';
+import { formatIBAN, formatISOReference, formatQRReference, whiteSpaceRemoved, whiteSpaceRemovedAndUpperCase } from './payments';
 import { QrBill } from "../qrbill-api/qrbill";
 import _ from 'lodash';
 
