@@ -118,11 +118,11 @@ const BillData: React.FC<BillDataProps> = props => {
 
       <form onSubmit={(event) => { event.preventDefault(); openPreview(); }}>
         <FormGroup>
-          <Grid container spacing={2}>
+          <Grid container columnSpacing={2}>
             <Grid md={6} xs={12}>
               <Card>
                 <CardContent>
-                  <Grid container rowSpacing={2}>
+                  <Grid container rowSpacing={2} columnSpacing={1}>
                     <Grid>
                       <Typography gutterBottom variant="h6" component="div">{t('account_payable_to')}</Typography>
                     </Grid>
@@ -154,7 +154,7 @@ const BillData: React.FC<BillDataProps> = props => {
             <Grid md={6} xs={12}>
               <Card>
                 <CardContent>
-                  <Grid container rowSpacing={2}>
+                  <Grid container rowSpacing={2} columnSpacing={1}>
                     <Grid xs={12}>
                       <Typography gutterBottom variant="h6" component="div">{t('payment_details')}</Typography>
                     </Grid>
@@ -180,7 +180,7 @@ const BillData: React.FC<BillDataProps> = props => {
             <Grid md={6} xs={12}>
               <Card>
                 <CardContent>
-                  <Grid container rowSpacing={2}>
+                  <Grid container rowSpacing={2} columnSpacing={1}>
                     <Grid>
                       <Typography gutterBottom variant="h6" component="div">{t('payable_by')}</Typography>
                     </Grid>
@@ -209,7 +209,7 @@ const BillData: React.FC<BillDataProps> = props => {
             <Grid md={6} xs={12}>
               <Card>
                 <CardContent>
-                  <Grid container rowSpacing={2}>
+                  <Grid container rowSpacing={2} columnSpacing={1}>
                     <Grid xs={12}>
                       <Typography gutterBottom variant="h6" component="div">{t('bill_format')}</Typography>
                     </Grid>
