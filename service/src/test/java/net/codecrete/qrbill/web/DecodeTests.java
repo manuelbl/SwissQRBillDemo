@@ -8,7 +8,6 @@ package net.codecrete.qrbill.web;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import io.restassured.response.Response;
 import net.codecrete.qrbill.web.model.QrCodeInformation;
 import net.codecrete.qrbill.web.model.ValidationMessage;
 import net.codecrete.qrbill.web.model.ValidationResponse;
@@ -16,11 +15,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit test for QR code decoding API
@@ -97,14 +92,13 @@ class DecodeTests {
             "XY;XYService;54321";
     //@formatter:on
 
-
     @Test
     void decodeText() {
 
         QrCodeInformation info = new QrCodeInformation();
         info.setText(VALID_QR_CODE_TEXT);
 
-        Response res = given()
+        var response = given()
             .when()
                 .contentType(ContentType.JSON)
                 .body(info)
@@ -112,18 +106,16 @@ class DecodeTests {
             .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .extract().response();
+                .extract().as(ValidationResponse.class);
 
-        ValidationResponse response = JsonHelper.extract(res, ValidationResponse.class);
-
-        assertThat(response, notNullValue());
-        assertThat(response.getValid(), equalTo(true));
-        assertThat(response.getValidationMessages(), nullValue());
-        assertThat(response.getValidatedBill(), notNullValue());
-        assertThat(response.getBillID(), notNullValue());
-        assertThat(response.getBillID().length(), greaterThan(100));
-        assertThat(response.getQrCodeText(), notNullValue());
-        assertThat(response.getQrCodeText(), equalTo(VALID_QR_CODE_TEXT));
+        assertThat(response).isNotNull();
+        assertThat(response.getValid()).isTrue();
+        assertThat(response.getValidationMessages()).isNull();
+        assertThat(response.getValidatedBill()).isNotNull();
+        assertThat(response.getBillID()).isNotNull();
+        assertThat(response.getBillID().length()).isGreaterThan(100);
+        assertThat(response.getQrCodeText()).isNotNull();
+        assertThat(response.getQrCodeText()).isEqualTo(VALID_QR_CODE_TEXT);
     }
 
     @Test
@@ -132,24 +124,24 @@ class DecodeTests {
         QrCodeInformation info = new QrCodeInformation();
         info.setText(INVALID_QR_CODE_TEXT);
 
-        Response res = given()
-                .when()
+        var response = given()
+            .when()
                 .contentType(ContentType.JSON)
                 .body(info)
                 .post("/bill/qrdata")
-                .then()
+            .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .extract().response();
+                .extract().as(ValidationResponse.class);
 
-        ValidationResponse response = JsonHelper.extract(res, ValidationResponse.class);
-
-        assertThat(response, notNullValue());
-        assertThat(response.getValid(), equalTo(false));
-        assertThat(response.getValidationMessages(), notNullValue());
-        assertThat(response.getValidationMessages().size(), equalTo(1));
-        assertThat(response.getValidationMessages().get(0).getType(), equalTo(ValidationMessage.TypeEnum.ERROR));
-        assertThat(response.getValidationMessages().get(0).getField(), equalTo("qrText"));
-        assertThat(response.getValidationMessages(), notNullValue());
+        assertThat(response).isNotNull();
+        assertThat(response.getValid()).isFalse();
+        assertThat(response.getValidationMessages())
+                .isNotNull()
+                .hasSize(1);
+        assertThat(response.getValidationMessages().get(0)).satisfies(m -> {
+            assertThat(m.getType()).isEqualTo(ValidationMessage.TypeEnum.ERROR);
+            assertThat(m.getField()).isEqualTo("qrText");
+        });
     }
 }

@@ -12,11 +12,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit test for the {@link PostalCodeData} class
@@ -34,21 +31,24 @@ class PostalCodeDataTests {
     @Test
     void singleMatch() {
         List<PostalCodeData.PostalCode> result = postalCodeData.suggestPostalCodes("CH", "8302");
-        assertEquals(1, result.size());
-        assertEquals("8302", result.get(0).code);
-        assertEquals("Kloten", result.get(0).town);
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0)).satisfies(pc -> {
+            assertThat(pc.code).isEqualTo("8302");
+            assertThat(pc.town).isEqualTo("Kloten");
+        });
     }
 
     @Test
     void zurichFullName() {
         List<PostalCodeData.PostalCode> result = postalCodeData.suggestPostalCodes("CH", "Zürich");
-        assertEquals(20, result.size());
+        assertThat(result).hasSize(20);
+
         String previousCode = "";
         for (PostalCodeData.PostalCode pc : result) {
-            assertEquals("Zürich", pc.town);
-            assertTrue("8000".compareTo(pc.code) <= 0);
-            assertTrue("8099".compareTo(pc.code) >= 0);
-            assertTrue(previousCode.compareTo(pc.code) < 0);
+            assertThat(pc.town).isEqualTo("Zürich");
+            assertThat(pc.code)
+                    .isBetween("8000", "8099")
+                    .isGreaterThanOrEqualTo(previousCode);
             previousCode = pc.code;
         }
     }
@@ -56,13 +56,14 @@ class PostalCodeDataTests {
     @Test
     void zurichSubstring() {
         List<PostalCodeData.PostalCode> result = postalCodeData.suggestPostalCodes("CH", "Züri");
-        assertEquals(20, result.size());
+        assertThat(result).hasSize(20);
+
         String previousCode = "";
         for (PostalCodeData.PostalCode pc : result) {
-            assertEquals("Zürich", pc.town);
-            assertTrue("8000".compareTo(pc.code) <= 0);
-            assertTrue("8099".compareTo(pc.code) >= 0);
-            assertTrue(previousCode.compareTo(pc.code) < 0);
+            assertThat(pc.town).isEqualTo("Zürich");
+            assertThat(pc.code)
+                    .isBetween("8000", "8099")
+                    .isGreaterThanOrEqualTo(previousCode);
             previousCode = pc.code;
         }
     }
@@ -70,15 +71,18 @@ class PostalCodeDataTests {
     @Test
     void dorfSubstring() {
         List<PostalCodeData.PostalCode> result = postalCodeData.suggestPostalCodes("CH", " dorf");
-        assertEquals(20, result.size());
+        assertThat(result).hasSize(20);
+
         String previousTown = "";
         for (PostalCodeData.PostalCode pc : result) {
-            assertTrue(pc.town.toLowerCase(Locale.FRENCH).contains("dorf"));
-            assertNotNull(pc.code);
             if (previousTown.startsWith("Dorf") && !pc.town.startsWith("Dorf"))
                 previousTown = ""; // Reset between "Dorf...." towns and "...dorf..." towns
-            assertTrue(previousTown.compareTo(pc.town) < 0,
-                    String.format("%s alphabetically before %s", previousTown, pc.town));
+
+            assertThat(pc.code).isNotNull();
+            assertThat(pc.town)
+                    .containsIgnoringCase("dorf")
+                    .isGreaterThanOrEqualTo(previousTown);
+
             previousTown = pc.town;
         }
     }
@@ -86,14 +90,17 @@ class PostalCodeDataTests {
     @Test
     void numericSubstring() {
         List<PostalCodeData.PostalCode> result = postalCodeData.suggestPostalCodes("CH", "203");
-        assertEquals(12, result.size());
+        assertThat(result).hasSize(12);
+
         String previousCode = "";
         for (PostalCodeData.PostalCode pc : result) {
-            assertNotNull(pc.town);
-            assertTrue(pc.code.contains("203"));
             if (previousCode.startsWith("203") && !pc.code.startsWith("203"))
                 previousCode = "";
-            assertTrue(previousCode.compareTo(pc.code) <= 0, String.format("%s <= %s", previousCode, pc.code));
+
+            assertThat(pc.code)
+                    .contains("203")
+                    .isGreaterThanOrEqualTo(previousCode);
+
             previousCode = pc.code;
         }
     }
@@ -101,12 +108,14 @@ class PostalCodeDataTests {
     @Test
     void startsWith880() {
         List<PostalCodeData.PostalCode> result = postalCodeData.suggestPostalCodes("", "880 ");
-        assertEquals(8, result.size());
+        assertThat(result).hasSize(8);
+
         String previousCode = "";
         for (PostalCodeData.PostalCode pc : result) {
-            assertNotNull(pc.town);
-            assertTrue(pc.code.startsWith("880"));
-            assertTrue(previousCode.compareTo(pc.code) <= 0, String.format("%s <= %s", previousCode, pc.code));
+            assertThat(pc.town).isNotNull();
+            assertThat(pc.code)
+                    .startsWith("880")
+                    .isGreaterThanOrEqualTo(previousCode);
             previousCode = pc.code;
         }
     }
@@ -114,32 +123,34 @@ class PostalCodeDataTests {
     @Test
     void startsWithRickenbach() {
         List<PostalCodeData.PostalCode> result = postalCodeData.suggestPostalCodes(null, " Rickenbach");
-        assertEquals(8, result.size());
+        assertThat(result).hasSize(7);
+
         String previousTown = "";
         for (PostalCodeData.PostalCode pc : result) {
-            assertTrue(pc.town.startsWith("Rickenbach"));
-            assertNotNull(pc.code);
-            assertTrue(previousTown.compareTo(pc.town.toLowerCase(Locale.FRENCH)) <= 0,
-                    String.format("%s alphabetically before %s", previousTown, pc.town));
-            previousTown = pc.town.toLowerCase(Locale.FRENCH);
+            assertThat(pc.code).isNotNull();
+            assertThat(pc.town)
+                    .startsWith("Rickenbach")
+                    .usingComparator(String.CASE_INSENSITIVE_ORDER)
+                    .isGreaterThanOrEqualTo(previousTown);
+            previousTown = pc.town;
         }
     }
 
     @Test
     void noMatch() {
         List<PostalCodeData.PostalCode> result = postalCodeData.suggestPostalCodes("CH", "abc");
-        assertEquals(0, result.size());
+        assertThat(result).hasSize(0);
     }
 
     @Test
     void noMatchNumeric() {
         List<PostalCodeData.PostalCode> result = postalCodeData.suggestPostalCodes("CH", "0123");
-        assertEquals(0, result.size());
+        assertThat(result).hasSize(0);
     }
 
     @Test
     void unsupportedCountry() {
         List<PostalCodeData.PostalCode> result = postalCodeData.suggestPostalCodes("DE", "12");
-        assertEquals(0, result.size());
+        assertThat(result).hasSize(0);
     }
 }

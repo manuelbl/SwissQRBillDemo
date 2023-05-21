@@ -6,51 +6,33 @@
 //
 package net.codecrete.qrbill.web.api;
 
-import net.codecrete.qrbill.generator.Bill;
-import net.codecrete.qrbill.generator.GraphicsFormat;
-import net.codecrete.qrbill.generator.Language;
-import net.codecrete.qrbill.generator.MultilingualText;
-import net.codecrete.qrbill.generator.OutputSize;
-import net.codecrete.qrbill.generator.QRBill;
-import net.codecrete.qrbill.generator.QRBillValidationError;
-import net.codecrete.qrbill.generator.SeparatorType;
-import net.codecrete.qrbill.generator.ValidationResult;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import net.codecrete.qrbill.generator.*;
 import net.codecrete.qrbill.web.model.QrBill;
 import net.codecrete.qrbill.web.model.QrCodeInformation;
 import net.codecrete.qrbill.web.model.ValidationMessage;
 import net.codecrete.qrbill.web.model.ValidationResponse;
+import org.jboss.resteasy.reactive.server.ServerExceptionMapper;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
 
 @ApplicationScoped
-@Path("/bill")
-public class BillApi {
+public class BillApiImpl implements BillApi {
 
     @Inject
     MessageLocalizer messageLocalizer;
 
-    @POST
-    @Path("/qrdata")
-    @Consumes({"application/json"})
-    @Produces({"application/json"})
-    public Response decodeQRCode(@NotNull @Valid QrCodeInformation qrCodeInformation, @Context HttpHeaders headers) {
+    @Inject
+    HttpHeaders httpHeaders;
+
+    @Override
+    public ValidationResponse decodeQRCode(QrCodeInformation qrCodeInformation) {
         ValidationResult result;
         try {
             Bill bill = QRBill.decodeQrCodeText(qrCodeInformation.getText());
@@ -58,60 +40,52 @@ public class BillApi {
         } catch (QRBillValidationError e) {
             result = e.getValidationResult();
         }
-        return Response.ok(createValidationResponse(result, headers)).build();
+        return createValidationResponse(result);
     }
 
-    @POST
-    @Path("/image")
-    @Consumes({"application/json"})
-    @Produces({"image/svg+xml", "application/pdf", "application/json"})
-    public Response generateBill(@NotNull @Valid QrBill qrBill, @Context HttpHeaders headers) {
+    @Override
+    public Response generateBill(QrBill qrBill) {
         Bill bill = DtoConverter.fromDtoQrBill(qrBill);
-        setFormatDefaults(bill, headers);
-        return generateImage(headers, bill);
+        setFormatDefaults(bill);
+        return generateImage(bill);
     }
 
-    @GET
-    @Path("/image/{billID}")
-    @Produces({"image/svg+xml", "application/pdf", "application/json"})
-    public Response getBillImage(@PathParam("billID") String billID, @QueryParam("outputSize") String outputSize,
-                                 @QueryParam("graphicsFormat") String graphicsFormat, @Context HttpHeaders headers) {
+    @Override
+    public Response getBillImage(String billID, String outputSize, String graphicsFormat) {
         Bill bill;
         try {
             bill = BillId.decode(billID);
             if (bill == null)
-                return Response.status(Response.Status.BAD_REQUEST).entity("Invalid bill ID. Validate bill data to get a valid ID").build();
-            setFormatDefaults(bill, headers);
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("Invalid bill ID. Validate bill data to get a valid ID")
+                        .build();
+            setFormatDefaults(bill);
+
         } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid bill ID. Validate bill data to get a valid ID").build();
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Invalid bill ID. Validate bill data to get a valid ID")
+                    .build();
         }
 
         if (outputSize != null)
             bill.getFormat().setOutputSize(getOutputSize(outputSize));
         if (graphicsFormat != null)
             bill.getFormat().setGraphicsFormat(getGraphicsFormat(graphicsFormat));
-        return generateImage(headers, bill);
+        return generateImage(bill);
     }
 
-    private Response generateImage(HttpHeaders headers, Bill bill) {
+    private Response generateImage(Bill bill) {
         updateForAdviceOnly(bill);
 
-        try {
-            byte[] result = QRBill.generate(bill);
-            MediaType contentType = getContentType(bill.getFormat().getGraphicsFormat());
-            return Response.ok(result, contentType).build();
-        } catch (QRBillValidationError ex) {
-            return validationErrorResponse(ex, headers);
-        }
+        byte[] result = QRBill.generate(bill);
+        MediaType contentType = getContentType(bill.getFormat().getGraphicsFormat());
+        return Response.ok(result, contentType).build();
     }
 
-    @POST
-    @Path("/validated")
-    @Consumes({"application/json"})
-    @Produces({"application/json"})
-    public Response validateBill(@NotNull @Valid QrBill qrBill, @Context HttpHeaders headers) {
+    @Override
+    public ValidationResponse validateBill(QrBill qrBill) {
         ValidationResult result = QRBill.validate(DtoConverter.fromDtoQrBill(qrBill));
-        return Response.ok(createValidationResponse(result, headers)).build();
+        return createValidationResponse(result);
     }
 
     private void updateForAdviceOnly(Bill bill) {
@@ -122,7 +96,7 @@ public class BillApi {
                 MultilingualText.getText(MultilingualText.KEY_DO_NOT_USE_FOR_PAYMENT, bill.getFormat().getLanguage()));
     }
 
-    private ValidationResponse createValidationResponse(ValidationResult result, HttpHeaders headers) {
+    private ValidationResponse createValidationResponse(ValidationResult result) {
         // Get validated data
         Bill validatedBill = result.getCleanedBill();
 
@@ -133,7 +107,7 @@ public class BillApi {
         if (result.hasMessages()) {
             List<ValidationMessage> messages
                     = DtoConverter.toDtoValidationMessageList(result.getValidationMessages());
-            messageLocalizer.translateMessages(messages, headers);
+            messageLocalizer.translateMessages(messages, httpHeaders);
             response.setValidationMessages(messages);
         }
         response.setValidatedBill(DtoConverter.toDtoQrBill(validatedBill));
@@ -148,7 +122,7 @@ public class BillApi {
         return response;
     }
 
-    private void setFormatDefaults(Bill bill, HttpHeaders headers) {
+    private void setFormatDefaults(Bill bill) {
         net.codecrete.qrbill.generator.BillFormat format = bill.getFormat();
         OutputSize outputSize = null;
         Language language = null;
@@ -167,7 +141,7 @@ public class BillApi {
         if (outputSize == null)
             outputSize = OutputSize.A4_PORTRAIT_SHEET;
         if (language == null)
-            language = languageFromRequestHeader(headers);
+            language = languageFromRequestHeader();
         if (language == null)
             language = Language.EN;
         if (separatorType == null)
@@ -176,7 +150,7 @@ public class BillApi {
             fontFamily = "Helvetica,Arial,\"Liberation Sans\"";
 
         if (graphicsFormat == null)
-            graphicsFormat = graphicsFormatFromRequestHeader(headers);
+            graphicsFormat = graphicsFormatFromRequestHeader();
         if (graphicsFormat == null)
             graphicsFormat = GraphicsFormat.SVG;
 
@@ -192,49 +166,29 @@ public class BillApi {
     }
 
     private static OutputSize getOutputSize(String value) {
-        OutputSize outputSize;
-        switch (value) {
-            case "a4-portrait-sheet":
-                outputSize = OutputSize.A4_PORTRAIT_SHEET;
-                break;
-            case "qr-bill-only":
-                outputSize = OutputSize.QR_BILL_ONLY;
-                break;
-            case "qr-bill-with-horizontal-line":
-                outputSize = OutputSize.QR_BILL_EXTRA_SPACE;
-                break;
-            case "qr-code-only":
-                outputSize = OutputSize.QR_CODE_ONLY;
-                break;
-            default:
-                outputSize = null;
-        }
-        return outputSize;
+        return switch (value) {
+            case "a4-portrait-sheet" -> OutputSize.A4_PORTRAIT_SHEET;
+            case "qr-bill-only" -> OutputSize.QR_BILL_ONLY;
+            case "qr-bill-with-horizontal-line" -> OutputSize.QR_BILL_EXTRA_SPACE;
+            case "qr-code-only" -> OutputSize.QR_CODE_ONLY;
+            default -> null;
+        };
     }
 
     private static GraphicsFormat getGraphicsFormat(String value) {
-        GraphicsFormat graphicsFormat;
-        switch (value) {
-            case "svg":
-                graphicsFormat = GraphicsFormat.SVG;
-                break;
-            case "pdf":
-                graphicsFormat = GraphicsFormat.PDF;
-                break;
-            case "png":
-                graphicsFormat = GraphicsFormat.PNG;
-                break;
-            default:
-                graphicsFormat = null;
-        }
-        return graphicsFormat;
+        return switch (value) {
+            case "svg" -> GraphicsFormat.SVG;
+            case "pdf" -> GraphicsFormat.PDF;
+            case "png" -> GraphicsFormat.PNG;
+            default -> null;
+        };
     }
 
     private static final MediaType MEDIA_TYPE_APPLICATION_PDF = new MediaType("application", "pdf");
     private static final MediaType MEDIA_TYPE_IMAGE_SVG = new MediaType("image", "svg+xml");
 
-    private GraphicsFormat graphicsFormatFromRequestHeader(HttpHeaders headers) {
-        for (MediaType mediaType : headers.getAcceptableMediaTypes()) {
+    private GraphicsFormat graphicsFormatFromRequestHeader() {
+        for (MediaType mediaType : httpHeaders.getAcceptableMediaTypes()) {
             if (mediaType.isCompatible(MEDIA_TYPE_IMAGE_SVG))
                 return GraphicsFormat.SVG;
             if (mediaType.isCompatible(MEDIA_TYPE_APPLICATION_PDF))
@@ -248,9 +202,9 @@ public class BillApi {
         return graphicsFormat == GraphicsFormat.SVG ? MEDIA_TYPE_IMAGE_SVG : MEDIA_TYPE_APPLICATION_PDF;
     }
 
-    private Language languageFromRequestHeader(HttpHeaders headers) {
+    private Language languageFromRequestHeader() {
 
-        for (Locale locale : headers.getAcceptableLanguages()) {
+        for (Locale locale : httpHeaders.getAcceptableLanguages()) {
             String language = locale.getLanguage();
             if ("en".equals(language))
                 return Language.EN;
@@ -267,15 +221,15 @@ public class BillApi {
         return null;
     }
 
-    private Response validationErrorResponse(QRBillValidationError ex, HttpHeaders headers) {
+    @ServerExceptionMapper
+    public Response mapException(QRBillValidationError ex) {
         List<ValidationMessage> messages
                 = DtoConverter.toDtoValidationMessageList(ex.getValidationResult().getValidationMessages());
-        messageLocalizer.translateMessages(messages, headers);
+        messageLocalizer.translateMessages(messages, httpHeaders);
         return Response
             .status(422, "Unprocessable Entity")
             .entity(messages)
             .type(MediaType.APPLICATION_JSON)
             .build();
     }
-
 }

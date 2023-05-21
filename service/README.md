@@ -1,8 +1,6 @@
 # QR Bill Service
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
-
-If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+This project uses Quarkus framework, version 3.
 
 ## Running the application in dev mode
 
@@ -11,7 +9,15 @@ You can run your application in dev mode that enables live coding using:
 ./mvnw compile quarkus:dev
 ```
 
-> **_NOTE:_**  A Dev UI is available in dev mode only at http://localhost:8080/q/dev/.
+For a setup with both the React UI and this service running on *localhost*, CORS handling should be disabled by
+commenting the below line in `application.properties`:
+
+```properties
+# quarkus.http.cors=true
+```
+
+A Dev UI is available in dev mode at http://localhost:8081/qrbill-api/q/dev/.
+
 
 ## Packaging and running the application
 

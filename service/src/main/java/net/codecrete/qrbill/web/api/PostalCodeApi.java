@@ -6,14 +6,9 @@
 //
 package net.codecrete.qrbill.web.api;
 
-import net.codecrete.qrbill.web.model.PostalCode;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.*;
 
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import java.util.List;
 
 @Path(value = "/postal-codes")

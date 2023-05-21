@@ -8,22 +8,15 @@ package net.codecrete.qrbill.web;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import io.restassured.response.Response;
 import net.codecrete.qrbill.web.model.BillFormat;
 import net.codecrete.qrbill.web.model.QrBill;
 import net.codecrete.qrbill.web.model.ValidationMessage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.nio.charset.StandardCharsets;
-
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.startsWith;
+import static net.codecrete.qrbill.web.TestHelpers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit test for QR bill generation API (PDF and SVG)
@@ -35,17 +28,18 @@ class BillGenerationTests {
     @Test
     void svgQrBill() {
         QrBill bill = SampleData.createBill1();
-        given()
+        var xml = given()
             .when()
                 .contentType(ContentType.JSON)
                 .body(bill)
                 .post("/bill/image")
             .then()
-                .statusCode(200)
-                .contentType("image/svg+xml")
-                .body(startsWith("<?xml"))
-                .body(containsString("<svg"))
-                .body(containsString("Meierhans AG"));
+                .spec(SVG)
+                .extract().asString();
+
+        assertThat(xml)
+                .is(svg())
+                .contains("Meierhans AG");
     }
 
     @Test
@@ -59,13 +53,10 @@ class BillGenerationTests {
                 .body(bill)
                 .post("/bill/image")
             .then()
-                .statusCode(200)
-                .contentType("application/pdf")
+                .spec(PDF)
                 .extract().asByteArray();
 
-        assertThat(result.length, greaterThan(1000));
-        String text = new String(result, 0, 8, StandardCharsets.UTF_8);
-        assertThat(text, equalTo("%PDF-1.4"));
+        assertThat(result).is(pdf());
     }
 
     @Test
@@ -73,17 +64,18 @@ class BillGenerationTests {
         QrBill bill = SampleData.createBill1();
         bill.getCreditor().setTown("city56789012345678901234567890123456");
 
-        given()
+        var xml = given()
             .when()
                 .contentType(ContentType.JSON)
                 .body(bill)
                 .post("/bill/image")
             .then()
-                .statusCode(200)
-                .contentType("image/svg+xml")
-                .body(startsWith("<?xml"))
-                .body(containsString("<svg"))
-                .body(containsString("font-size=\"10\">2100 city5678901234567890123456789012345</text>"));
+                .spec(SVG)
+                .extract().asString();
+
+        assertThat(xml)
+                .is(svg())
+                .contains("font-size=\"10\">2100 city5678901234567890123456789012345</text>");
     }
 
     @Test
@@ -91,7 +83,7 @@ class BillGenerationTests {
         QrBill bill = SampleData.createBill1();
         bill.getCreditor().setTown(null);
 
-        Response response = given()
+        var messages = given()
             .when()
                 .contentType(ContentType.JSON)
                 .body(bill)
@@ -99,15 +91,14 @@ class BillGenerationTests {
             .then()
                 .statusCode(422)
                 .contentType("application/json")
-                .extract().response();
+                .extract().as(ValidationMessage[].class);
 
-        ValidationMessage[] messages = JsonHelper.extract(response, ValidationMessage[].class);
-
-        assertThat(messages, notNullValue());
-        assertThat(messages.length, equalTo(1));
-        assertThat(messages[0].getType(), equalTo(ValidationMessage.TypeEnum.ERROR));
-        assertThat(messages[0].getField(), equalTo("creditor.town"));
-        assertThat(messages[0].getMessageKey(), equalTo("field_value_missing"));
+        assertThat(messages)
+                .isNotNull()
+                .hasSize(1);
+        assertThat(messages[0].getType()).isEqualTo(ValidationMessage.TypeEnum.ERROR);
+        assertThat(messages[0].getField()).isEqualTo("creditor.town");
+        assertThat(messages[0].getMessageKey()).isEqualTo("field_value_missing");
     }
 
     @Test
@@ -144,18 +135,19 @@ class BillGenerationTests {
         QrBill bill = SampleData.createBill1();
         bill.setFormat(null);
 
-        given()
+        var xml = given()
             .when()
                 .contentType(ContentType.JSON)
                 .header("Accept-Language", language)
                 .body(bill)
                 .post("/bill/image")
             .then()
-                .statusCode(200)
-                .contentType("image/svg+xml")
-                .body(startsWith("<?xml"))
-                .body(containsString("<svg"))
-                .body(containsString(textFragment));
+                .spec(SVG)
+                .extract().asString();
+
+        assertThat(xml)
+                .is(svg())
+                .contains(textFragment);
     }
 
     @Test
@@ -170,13 +162,10 @@ class BillGenerationTests {
                 .body(bill)
                 .post("/bill/image")
             .then()
-                .statusCode(200)
-                .contentType("application/pdf")
+                .spec(PDF)
                 .extract().asByteArray();
 
-        assertThat(result.length, greaterThan(1000));
-        String text = new String(result, 0, 8, StandardCharsets.UTF_8);
-        assertThat(text, equalTo("%PDF-1.4"));
+        assertThat(result).is(pdf());
     }
 
     @Test
@@ -184,16 +173,17 @@ class BillGenerationTests {
         QrBill bill = SampleData.createBill1();
         bill.setFormat(null);
 
-        given()
+        var xml = given()
             .when()
                 .contentType(ContentType.JSON)
                 .body(bill)
                 .post("/bill/image")
             .then()
-                .statusCode(200)
-                .contentType("image/svg+xml")
-                .body(startsWith("<?xml"))
-                .body(containsString("<svg"))
-                .body(containsString("Payment part"));
+                .spec(SVG)
+                .extract().asString();
+
+        assertThat(xml)
+                .is(svg())
+                .contains("Payment part");
     }
 }

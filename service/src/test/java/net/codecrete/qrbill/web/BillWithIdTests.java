@@ -8,22 +8,14 @@ package net.codecrete.qrbill.web;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import io.restassured.response.Response;
 import net.codecrete.qrbill.web.model.QrBill;
 import net.codecrete.qrbill.web.model.ValidationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.nio.charset.StandardCharsets;
-
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.startsWith;
+import static net.codecrete.qrbill.web.TestHelpers.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit test for retrieving a bill by ID (API test)
@@ -61,7 +53,7 @@ class BillWithIdTests {
 
     void testImage(QrBill bill, String textInSvg) {
         // Validate bill data to retrieve bill ID
-        Response res = given()
+        var response = given()
             .when()
                 .contentType(ContentType.JSON)
                 .body(bill)
@@ -69,36 +61,37 @@ class BillWithIdTests {
             .then()
                 .statusCode(200)
                 .contentType("application/json")
-                .extract().response();
+                .extract().as(ValidationResponse.class);
 
-        ValidationResponse response = JsonHelper.extract(res, ValidationResponse.class);
-        assertThat(response, notNullValue());
-        assertThat(response.getBillID(), notNullValue());
+        assertThat(response).isNotNull();
+        assertThat(response.getBillID()).isNotNull();
 
         // Generate and validated image from bill ID
-        given()
+        var xml = given()
             .when()
                 .get("/bill/image/{billId}", response.getBillID())
             .then()
-                .statusCode(200)
-                .contentType("image/svg+xml")
-                .body(startsWith("<?xml"))
-                .body(containsString("<svg"))
-                .body(containsString(textInSvg));
+                .spec(SVG)
+                .extract().asString();
+
+        assertThat(xml)
+                .is(svg())
+                .contains(textInSvg);
     }
 
     @Test
     void retrieveBillOverrideOutputSize() {
-        given()
+        var xml = given()
                 .queryParam("outputSize", "qr-code-only")
-                .when()
+            .when()
                 .get("/bill/image/{billId}", VALID_BILL_ID)
-                .then()
-                .statusCode(200)
-                .contentType("image/svg+xml")
-                .body(startsWith("<?xml"))
-                .body(containsString("<svg"))
-                .body(not(containsString("Croce")));
+            .then()
+                .spec(SVG)
+                .extract().asString();
+
+        assertThat(xml)
+                .is(svg())
+                .doesNotContain("Croce");
     }
 
     @Test
@@ -108,13 +101,10 @@ class BillWithIdTests {
             .when()
                 .get("/bill/image/{billId}", VALID_BILL_ID)
             .then()
-                .statusCode(200)
-                .contentType("application/pdf")
+                .spec(PDF)
                 .extract().asByteArray();
 
-        assertThat(result.length, greaterThan(1000));
-        String text = new String(result, 0, 8, StandardCharsets.UTF_8);
-        assertThat(text, equalTo("%PDF-1.4"));
+        assertThat(result).is(pdf());
     }
 
     @Test

@@ -6,10 +6,10 @@
 //
 package net.codecrete.qrbill.web.api;
 
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.ws.rs.core.HttpHeaders;
 import net.codecrete.qrbill.web.model.ValidationMessage;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.ws.rs.core.HttpHeaders;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Locale;

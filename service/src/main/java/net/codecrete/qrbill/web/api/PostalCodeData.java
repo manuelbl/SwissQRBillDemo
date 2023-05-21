@@ -6,23 +6,14 @@
 //
 package net.codecrete.qrbill.web.api;
 
-import javax.enterprise.context.ApplicationScoped;
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import jakarta.enterprise.context.ApplicationScoped;
+
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.zip.ZipInputStream;
 
 @ApplicationScoped
@@ -247,11 +238,13 @@ public class PostalCodeData {
     private void setupSortedArrays(List<PostalCode> postalCodeList) {
         sortedByPostalCode = new PostalCode[postalCodeList.size()];
         sortedByPostalCode = postalCodeList.toArray(sortedByPostalCode);
-        Arrays.sort(sortedByPostalCode, Comparator.comparing(pc -> pc.code));
+        Arrays.sort(sortedByPostalCode, CODE_COMPARATOR);
+        sortedByPostalCode = withoutDuplicates(sortedByPostalCode);
 
         sortedByTown = new PostalCode[postalCodeList.size()];
         sortedByTown = postalCodeList.toArray(sortedByTown);
-        Arrays.sort(sortedByTown, Comparator.comparing(pc -> pc.townLowercase));
+        Arrays.sort(sortedByTown, TOWN_COMPARATOR);
+        sortedByTown = withoutDuplicates(sortedByTown);
     }
 
     private static byte[] readFully(InputStream inputStream, int expectedLength) throws IOException {
@@ -265,6 +258,35 @@ public class PostalCodeData {
         }
         return ba.toByteArray();
     }
+
+    /**
+     * Creates a new array by removing duplicate elements.
+     * <p>
+     * The given array must be sorted such that equal elements are together.
+     * </p>
+     * @param codes array of postal code
+     * @return new array without duplicates
+     */
+    private static PostalCode[] withoutDuplicates(PostalCode[] codes) {
+        int size = codes.length;
+        var array = new PostalCode[size];
+        int newSize = 0;
+        PostalCode previous = null;
+        for (PostalCode current : codes) {
+            if (previous != null
+                    && current.code.equals(previous.code)
+                    && current.townLowercase.equals(previous.townLowercase))
+                continue;
+            array[newSize] = current;
+            newSize += 1;
+            previous = current;
+        }
+        return Arrays.copyOf(array, newSize);
+    }
+
+    private static final Comparator<PostalCode> TOWN_COMPARATOR = Comparator.comparing((PostalCode pc) -> pc.townLowercase).thenComparing(pc -> pc.code);
+
+    private static final Comparator<PostalCode> CODE_COMPARATOR = Comparator.comparing((PostalCode pc) -> pc.code).thenComparing(pc -> pc.townLowercase);
 
     public static class PostalCode {
 
@@ -281,6 +303,7 @@ public class PostalCodeData {
 
     public static class PostalCodeDataException extends RuntimeException {
 
+        @Serial
         private static final long serialVersionUID = -3812824699087699254L;
 
         public PostalCodeDataException(String message) {

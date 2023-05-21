@@ -8,7 +8,6 @@ package net.codecrete.qrbill.web;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import io.restassured.response.Response;
 import net.codecrete.qrbill.web.model.QrBill;
 import net.codecrete.qrbill.web.model.ValidationMessage;
 import net.codecrete.qrbill.web.model.ValidationResponse;
@@ -16,12 +15,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.startsWith;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Unit tests for bill data validation API
@@ -34,7 +28,7 @@ class ValidationTests {
     void validBill() {
         QrBill bill = SampleData.createBill1();
 
-        Response res = given()
+        var response = given()
             .when()
                 .contentType(ContentType.JSON)
                 .body(bill)
@@ -42,19 +36,17 @@ class ValidationTests {
             .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .extract().response();
+                .extract().as(ValidationResponse.class);
 
-        ValidationResponse response = JsonHelper.extract(res, ValidationResponse.class);
-
-        assertThat(response, notNullValue());
-        assertThat(response.getValid(), equalTo(true));
-        assertThat(response.getValidationMessages(), nullValue());
-        assertThat(response.getValidatedBill(), notNullValue());
-        assertThat(response.getValidatedBill(), equalTo(bill));
-        assertThat(response.getBillID(), notNullValue());
-        assertThat(response.getBillID().length(), greaterThan(100));
-        assertThat(response.getQrCodeText(), notNullValue());
-        assertThat(response.getQrCodeText().length(), greaterThan(100));
+        assertThat(response).isNotNull();
+        assertThat(response.getValid()).isTrue();
+        assertThat(response.getValidationMessages()).isNull();
+        assertThat(response.getValidatedBill()).isNotNull();
+        assertThat(response.getValidatedBill()).isEqualTo(bill);
+        assertThat(response.getBillID()).isNotNull();
+        assertThat(response.getBillID().length()).isGreaterThan(100);
+        assertThat(response.getQrCodeText()).isNotNull();
+        assertThat(response.getQrCodeText().length()).isGreaterThan(100);
     }
 
     @Test
@@ -62,7 +54,7 @@ class ValidationTests {
         QrBill bill = SampleData.createBill1();
         bill.getCreditor().setTown("city56789012345678901234567890123456");
 
-        Response res = given()
+        var response = given()
             .when()
                 .contentType(ContentType.JSON)
                 .body(bill)
@@ -70,26 +62,26 @@ class ValidationTests {
             .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .extract().response();
+                .extract().as(ValidationResponse.class);
 
-        ValidationResponse response = JsonHelper.extract(res, ValidationResponse.class);
-
-        assertThat(response, notNullValue());
-        assertThat(response.getValid(), equalTo(true));
-        assertThat(response.getValidationMessages(), notNullValue());
-        assertThat(response.getValidationMessages().size(), equalTo(1));
-        assertThat(response.getValidationMessages().get(0).getType(), equalTo(ValidationMessage.TypeEnum.WARNING));
-        assertThat(response.getValidationMessages().get(0).getField(), equalTo("creditor.town"));
-        assertThat(response.getValidationMessages().get(0).getMessageKey(), equalTo("field_value_clipped"));
+        assertThat(response).isNotNull();
+        assertThat(response.getValid()).isTrue();
+        assertThat(response.getValidationMessages())
+                .isNotNull()
+                .hasSize(1);
+        assertThat(response.getValidationMessages().get(0)).satisfies(m -> {
+            assertThat(m.getType()).isEqualTo(ValidationMessage.TypeEnum.WARNING);
+            assertThat(m.getField()).isEqualTo("creditor.town");
+            assertThat(m.getMessageKey()).isEqualTo("field_value_clipped");
+        });
 
         bill.getCreditor().setTown("city5678901234567890123456789012345");
-        assertThat(response.getValidatedBill(), notNullValue());
-        assertThat(response.getValidatedBill(), equalTo(bill));
+        assertThat(response.getValidatedBill()).isEqualTo(bill);
 
-        assertThat(response.getBillID(), notNullValue());
-        assertThat(response.getBillID().length(), greaterThan(100));
-        assertThat(response.getQrCodeText(), notNullValue());
-        assertThat(response.getQrCodeText().length(), greaterThan(100));
+        assertThat(response.getBillID()).isNotNull();
+        assertThat(response.getBillID().length()).isGreaterThan(100);
+        assertThat(response.getQrCodeText()).isNotNull();
+        assertThat(response.getQrCodeText().length()).isGreaterThan(100);
     }
 
     @Test
@@ -97,30 +89,29 @@ class ValidationTests {
         QrBill bill = SampleData.createBill1();
         bill.setCreditor(null);
 
-        Response res = given()
-                .when()
+        var response = given()
+            .when()
                 .contentType(ContentType.JSON)
                 .body(bill)
                 .post("/bill/validated")
-                .then()
+            .then()
                 .statusCode(200)
                 .contentType(ContentType.JSON)
-                .extract().response();
+                .extract().as(ValidationResponse.class);
 
-        ValidationResponse response = JsonHelper.extract(res, ValidationResponse.class);
-
-        assertThat(response, notNullValue());
-        assertThat(response.getValid(), equalTo(false));
-        assertThat(response.getValidationMessages(), notNullValue());
-        assertThat(response.getValidationMessages().size(), equalTo(5));
+        assertThat(response).isNotNull();
+        assertThat(response.getValid()).isFalse();
+        assertThat(response.getValidationMessages())
+                .isNotNull()
+                .hasSize(5);
 
         for (ValidationMessage message : response.getValidationMessages()) {
-            assertThat(message.getType(), equalTo(ValidationMessage.TypeEnum.ERROR));
-            assertThat(message.getField(), startsWith("creditor."));
-            assertThat(message.getMessageKey(), equalTo("field_value_missing"));
+            assertThat(message.getType()).isEqualTo(ValidationMessage.TypeEnum.ERROR);
+            assertThat(message.getField()).startsWith("creditor.");
+            assertThat(message.getMessageKey()).isEqualTo("field_value_missing");
         }
 
-        assertThat(response.getBillID(), nullValue());
-        assertThat(response.getQrCodeText(), nullValue());
+        assertThat(response.getBillID()).isNull();
+        assertThat(response.getQrCodeText()).isNull();
     }
 }
