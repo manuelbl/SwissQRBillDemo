@@ -24,73 +24,72 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("Decode QR code text")
 class DecodeTests {
 
-    //@formatter:off
     private static final String INVALID_QR_CODE_TEXT =
-            "SPC\r\n" +
-            "0100\r\n" +
-            "1\r\n" +
-            "CH2109000000450980316\r\n" +
-            "Druckerei Stefan Meierhans\r\n" +
-            "Trittligasse\r\n" +
-            "12\r\n" +
-            "3001\r\n" +
-            "Bern\r\n" +
-            "CH\r\n" +
-            "\r\n" +
-            "\r\n" +
-            "\r\n" +
-            "\r\n" +
-            "\r\n" +
-            "\r\n" +
-            "45.60\r\n" +
-            "CHF\r\n" +
-            "2018-04-26\r\n" +
-            "Anneliese Schmid\r\n" +
-            "Segelhofstrasse\r\n" +
-            "13\r\n" +
-            "5057\r\n" +
-            "Reitnau\r\n" +
-            "CH\r\n" +
-            "QRR\r\n" +
-            "829300097829382938291172974\r\n";
-    //@formatter:on
+            """
+SPC\r
+0100\r
+1\r
+CH2109000000450980316\r
+Druckerei Stefan Meierhans\r
+Trittligasse\r
+12\r
+3001\r
+Bern\r
+CH\r
+\r
+\r
+\r
+\r
+\r
+\r
+45.60\r
+CHF\r
+2018-04-26\r
+Anneliese Schmid\r
+Segelhofstrasse\r
+13\r
+5057\r
+Reitnau\r
+CH\r
+QRR\r
+829300097829382938291172974\r
+""";
 
-    //@formatter:off
-    private static final String VALID_QR_CODE_TEXT = "SPC\n" +
-            "0200\n" +
-            "1\n" +
-            "CH4431999123000889012\n" +
-            "S\n" +
-            "Robert Schneider AG\n" +
-            "Rue du Lac\n" +
-            "1268\n" +
-            "2501\n" +
-            "Biel\n" +
-            "CH\n" +
-            "\n" +
-            "\n" +
-            "\n" +
-            "\n" +
-            "\n" +
-            "\n" +
-            "\n" +
-            "1949.75\n" +
-            "CHF\n" +
-            "S\n" +
-            "Pia-Maria Rutschmann-Schnyder\n" +
-            "Grosse Marktgasse\n" +
-            "28\n" +
-            "9400\n" +
-            "Rorschach\n" +
-            "CH\n" +
-            "QRR\n" +
-            "210000000003139471430009017\n" +
-            "Order dated 18.06.2020\n" +
-            "EPD\n" +
-            "//S1/01/20170309/11/10201409/20/14000000/22/36958/30/CH106017086/40/1020/41/3010\n" +
-            "UV;UltraPay005;12345\n" +
-            "XY;XYService;54321";
-    //@formatter:on
+    private static final String VALID_QR_CODE_TEXT = """
+SPC
+0200
+1
+CH4431999123000889012
+S
+Robert Schneider AG
+Rue du Lac
+1268
+2501
+Biel
+CH
+
+
+
+
+
+
+
+1949.75
+CHF
+S
+Pia-Maria Rutschmann-Schnyder
+Grosse Marktgasse
+28
+9400
+Rorschach
+CH
+QRR
+210000000003139471430009017
+Order dated 18.06.2020
+EPD
+//S1/01/20170309/11/10201409/20/14000000/22/36958/30/CH106017086/40/1020/41/3010
+UV;UltraPay005;12345
+XY;XYService;54321""";
 
     @Test
     void decodeText() {

@@ -58,6 +58,7 @@ class InvalidRequestTests {
                 .statusCode(400);
     }
 
+    @SuppressWarnings("JsonStandardCompliance")
     @Test
     void testInvalidJson() {
         given()

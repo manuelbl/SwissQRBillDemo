@@ -20,7 +20,7 @@ public class TestHelpers {
     /**
      * Response specification check for status code 200 and SVG content type.
      */
-    public static ResponseSpecification SVG = new ResponseSpecBuilder()
+    public static final ResponseSpecification SVG = new ResponseSpecBuilder()
             .expectStatusCode(200)
             .expectContentType("image/svg+xml")
             .build();
@@ -28,7 +28,7 @@ public class TestHelpers {
     /**
      * Response specification check for status code 200 and SVG content type.
      */
-    public static ResponseSpecification PDF = new ResponseSpecBuilder()
+    public static final ResponseSpecification PDF = new ResponseSpecBuilder()
             .expectStatusCode(200)
             .expectContentType("application/pdf")
             .build();
