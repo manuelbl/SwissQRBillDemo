@@ -118,7 +118,7 @@ const BillData: React.FC<BillDataProps> = props => {
 
       <form onSubmit={(event) => { event.preventDefault(); openPreview(); }}>
         <FormGroup>
-          <Grid container columnSpacing={2}>
+          <Grid container rowSpacing={2} columnSpacing={2}>
             <Grid md={6} xs={12}>
               <Card>
                 <CardContent>
