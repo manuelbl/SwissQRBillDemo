@@ -9,6 +9,7 @@ import { TextField } from "@mui/material";
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { FieldFormatter, StringFormatter } from "./field-formatter";
+import { BillValue } from "./bill-helper";
 
 /**
  * `FormattedTextEnh` props
@@ -17,7 +18,7 @@ interface FormattedTextEnhProps {
   /** Field ID */
   fieldId: string;
   /** Value to edit */
-  value: any;
+  value: BillValue;
   /** Indicates if the text field requires input */
   required?: boolean;
   /** Indicates if text field is for entering a number (defaults to false) */
@@ -25,12 +26,12 @@ interface FormattedTextEnhProps {
   /** Label key */
   labelKey: string;
   /** Error messages (pairs of field ID and error message) */
-  errorMessages?: { [fieldId: string]: string };
+  errorMessages?: Record<string, string>;
   /** Formatter for converting between formatted string and raw value */
   formatter?: FieldFormatter;
   /** Functions to update the value */
-  updateField: (fieldId: string, value: any) => void;
-};
+  updateField: (fieldId: string, value: BillValue) => void;
+}
 
 const defaultFormatter = new StringFormatter();
 
@@ -47,12 +48,8 @@ const defaultFormatter = new StringFormatter();
  * If `errorMessages` contains a key matching the `fieldId`, the associated value
  * is displayed as an error message below the text field.
  */
-const FormattedTextEnh: React.FC<FormattedTextEnhProps> = props => {
+const FormattedTextEnh = ({ fieldId, value, required = false, isNumeric = false, labelKey, errorMessages, formatter = defaultFormatter, updateField }: FormattedTextEnhProps) => {
 
-  const { fieldId, value, labelKey, errorMessages, updateField } = props;
-  const formatter = props.formatter ?? defaultFormatter;
-  const isNumeric = props.isNumeric ?? false;
-  const required = props.required ?? false;
   const formattedValue = useMemo(() => formatter.formattedValue(value), [value, formatter]);
   const [editValue, setEditValue] = useState(formattedValue);
 

@@ -6,8 +6,9 @@
 //
 
 import { screen } from '@testing-library/react';
-import App from './App';
 import { render } from './test-utils';
+import { expect, test } from 'vitest';
+import App from './App';
 
 
 test('nav bar and bill data form is shown', () => {

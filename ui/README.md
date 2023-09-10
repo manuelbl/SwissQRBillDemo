@@ -1,6 +1,6 @@
 # QR Bill UI
 
-This project uses React 18, React Router 6, Typescript 4.8, MUI 5.4 and yarn.
+This project uses React 18, React Router 6, Vite xxx, Typescript 4.8, MUI 5.4 and yarn.
 
 
 ## Development mode
@@ -8,14 +8,14 @@ This project uses React 18, React Router 6, Typescript 4.8, MUI 5.4 and yarn.
 To run the app in development mode, type:
 
 ```
-yarn start
+yarn dev
 ```
 
-The app should automatically open in your browser. If not, open [http://localhost:3000](http://localhost:3000).
+The app should automatically will be available at [http://localhost:5173/qrbill](http://localhost:5173/qrbill) (the link is also displayed in the console).
 
 If you make changes to the source code, the app will automatically reload.
 
-In order to properly work, the [REST service](../service/) should be running (on port 8081).
+In order to properly work, the [REST service](../service/) should be running (on port 8081) with CORS disabled.
 
 
 ## Unit tests
@@ -27,6 +27,15 @@ yarn test
 ```
 
 
+## Lint
+
+The linter can be run with:
+
+```
+yarn lint
+```
+
+
 ## Production build
 
 To create the production version of the app, run:
@@ -35,13 +44,11 @@ To create the production version of the app, run:
 yarn build
 ```
 
-The result will be in the `build` folder.
+The result will be in the `dist` folder.
 
 
 ## URL structure
 
 The app is built to be run in the subpath `/qrbill` with the REST service at `/qrbill-api`.
 
-In development mode, the development server will redirect URLs starting with `http://localhost:3000/qrbill-api/` to `http://localhost:8081/qrbill-api/`. Additionally, for a smooth startup, the URL `http://localhost:3000/` is redirected to `http://localhost:3000/qrbill/`.
-
-The relevant code can be found in [setupProxy.js](setupProxy.js).
+In development mode, the development server will redirect URLs starting with `http://localhost:5173/qrbill-api/` to `http://localhost:8081/qrbill-api/` (see [vite.config.ts](vite.config.ts)).

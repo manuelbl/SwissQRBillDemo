@@ -10,12 +10,15 @@ import userEvent from '@testing-library/user-event';
 import { ExampleList } from './example-list';
 import { QrBill } from '../qrbill-api/qrbill';
 import { render } from '../app/test-utils';
+import { expect, test, vi } from 'vitest';
 import Examples from './Examples';
 
 
 test('example can be selected', async () => {
 
-  const selectBill = jest.fn((_bill: QrBill) => { });
+  const selectBill = vi.fn((_: QrBill) => {
+    // nothing to do in this test
+  });
   const user = userEvent.setup();
 
   render(<Examples selectBill={selectBill} />);
@@ -25,6 +28,6 @@ test('example can be selected', async () => {
 
   await user.click(buttons[3]);
 
-  expect((selectBill.mock.calls[0][0] as QrBill).account).toEqual(ExampleList[3].bill.account)
+  expect(selectBill.mock.calls[0][0].account).toEqual(ExampleList[3].bill.account)
   expect(window.location.pathname).toBe('/');
 });

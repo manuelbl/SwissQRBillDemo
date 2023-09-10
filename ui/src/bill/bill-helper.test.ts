@@ -8,6 +8,7 @@
 import { Address } from "../qrbill-api/address";
 import { BillFormat } from "../qrbill-api/bill-format";
 import { QrBill } from "../qrbill-api/qrbill";
+import { expect, test } from 'vitest';
 import { cloneBill, ibanFormatter, referenceFormatter, updateBillField } from "./bill-helper";
 
 const sampleAddress: Address = {

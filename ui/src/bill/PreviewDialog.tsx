@@ -13,7 +13,7 @@ const qrBillDummyImage = "data:image/svg+xml,%3C%3Fxml version='1.0' encoding='U
 const a4PortraitDummyImage = "data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='794px' height='1123px' viewBox='0 0 794 1123' version='1.1' xmlns='http://www.w3.org/2000/svg' style='background: %23FFFFFF;'%3E%3Cg stroke='none' fill='none'%3E%3Crect fill='%23DDDDDD' x='19' y='744' width='174' height='179'%3E%3C/rect%3E%3Crect fill='%23DDDDDD' x='19' y='982' width='101' height='27'%3E%3C/rect%3E%3Crect fill='%23DDDDDD' x='446' y='744' width='256' height='235'%3E%3C/rect%3E%3Crect fill='%23DDDDDD' x='252' y='744' width='88' height='16'%3E%3C/rect%3E%3Crect fill='%23DDDDDD' x='252' y='789' width='176' height='175'%3E%3C/rect%3E%3Crect fill='%23DDDDDD' x='252' y='982' width='107' height='27'%3E%3C/rect%3E%3Cpath d='M235.5,726 L235.5,1123' stroke='%23DDDDDD' stroke-width='2' stroke-linecap='square'%3E%3C/path%3E%3C/g%3E%3C/svg%3E";
 const qrCodeDummyImage = "data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='174px' height='174px' viewBox='0 0 174 174' version='1.1' xmlns='http://www.w3.org/2000/svg' style='background: %23DDDDDD;'%3E%3C/svg%3E";
 
-type PreviewDialogProps = {
+interface PreviewDialogProps {
   /**
    * Bill ID
    */
@@ -30,7 +30,7 @@ type PreviewDialogProps = {
    * Function to call to close the dialog.
    */
   close: () => void,
-};
+}
 
 /**
  * Dialog for previewing QR bill.
@@ -41,9 +41,7 @@ type PreviewDialogProps = {
  * while the dialog is opening and the bill ID has not been
  * set yet. It prevents resizing during the opening animation.
  */
-const PreviewDialog: React.FC<PreviewDialogProps> = props => {
-
-  const { billId, isOpen, outputSize, close } = props;
+const PreviewDialog = ({ billId, isOpen, outputSize, close } :PreviewDialogProps) => {
 
   const { t } = useTranslation();
 

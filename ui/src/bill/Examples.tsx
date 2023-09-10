@@ -12,16 +12,14 @@ import { useNavigate } from "react-router-dom";
 import { ExampleList } from "./example-list";
 import { QrBill } from "../qrbill-api/qrbill";
 
-type ExampleProps = {
+interface ExampleProps {
   selectBill: (bill: QrBill) => void;
 }
 
 /**
  * Page displaying QR bill examples
  */
-const Examples: React.FC<ExampleProps> = props => {
-
-  const { selectBill } = props;
+const Examples = ({ selectBill }: ExampleProps) => {
 
   const navigate = useNavigate();
 

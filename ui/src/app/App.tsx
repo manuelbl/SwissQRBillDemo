@@ -10,7 +10,7 @@ import { Navigate, useRoutes } from 'react-router-dom';
 import { Box, Toolbar } from '@mui/material';
 import { ExampleList } from '../bill/example-list';
 import { QrBill } from '../qrbill-api/qrbill';
-import { cloneBill, updateBillField } from '../bill/bill-helper';
+import { BillValue, cloneBill, updateBillField } from '../bill/bill-helper';
 import About from './About';
 import BillData from '../bill/BillData';
 import Examples from '../bill/Examples';
@@ -21,7 +21,7 @@ import './App.css';
 /**
  * App component with navigation bar and router 
  */
-const App: React.FC<{}> = _props => {
+const App = () => {
 
   // QR bill data being edited
   const [bill, setBill] = useState(ExampleList[0].bill);
@@ -31,7 +31,7 @@ const App: React.FC<{}> = _props => {
    * @param path field path, e.g. `format.outputSize`
    * @param value new value
    */
-  function updateField(path: string, value: any) {
+  function updateField(path: string, value: BillValue) {
     setBill(bill => updateBillField(bill, path, value));
   }
 
@@ -40,10 +40,10 @@ const App: React.FC<{}> = _props => {
    * @param bill selected bill
    */
   function selectBill(bill: QrBill) {
-    setBill(_ => cloneBill(bill));
+    setBill(() => cloneBill(bill));
   }
 
-  let routes = useRoutes([
+  const routes = useRoutes([
     {
       path: "/",
       element: <BillData bill={bill} updateField={updateField} />,

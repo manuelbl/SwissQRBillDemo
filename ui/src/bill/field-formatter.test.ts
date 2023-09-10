@@ -5,6 +5,7 @@
 // https://opensource.org/licenses/MIT
 //
 
+import { expect, test } from "vitest";
 import { StringFormatter } from "./field-formatter";
 
 const stringFormatter = new StringFormatter();

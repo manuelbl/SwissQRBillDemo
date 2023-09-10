@@ -1,14 +1,16 @@
-/*
- * Swiss QR Bill Generator
- * Copyright (c) 2022 Manuel Bleichenbacher
- * Licensed under MIT License
- * https://opensource.org/licenses/MIT
- */
+//
+// Swiss QR Bill Generator
+// Copyright (c) 2022 Manuel Bleichenbacher
+// Licensed under MIT License
+// https://opensource.org/licenses/MIT
+//
 
 import { FieldFormatter } from './field-formatter';
 import { formatIBAN, formatISOReference, formatQRReference, whiteSpaceRemoved, whiteSpaceRemovedAndUpperCase } from './payments';
 import { QrBill } from "../qrbill-api/qrbill";
 import _ from 'lodash';
+
+export type BillValue = number | string | undefined;
 
 export class PaymentValidationError extends Error {
 }
@@ -22,7 +24,7 @@ export class PaymentValidationError extends Error {
  * @param value the new value for the field
  * @returns new modified bill instance
  */
-export function updateBillField(bill: QrBill, path: string, value: any): QrBill {
+export function updateBillField(bill: QrBill, path: string, value: BillValue): QrBill {
   bill = cloneBill(bill);
   _.set(bill, path, value);
   return bill;
@@ -44,11 +46,11 @@ export function cloneBill(bill: QrBill): QrBill {
 }
 
 class IBANFormatter implements FieldFormatter {
-  formattedValue(rawValue: any): string {
-    return formatIBAN(rawValue);
+  formattedValue(rawValue: BillValue): string {
+    return formatIBAN(rawValue as string);
   }
 
-  rawValue(formattedValue: string): any {
+  rawValue(formattedValue: string): BillValue {
     return whiteSpaceRemoved(formattedValue);
   }
 }
@@ -57,23 +59,23 @@ export const ibanFormatter = new IBANFormatter();
 
 
 class ReferenceFormatter implements FieldFormatter {
-  formattedValue(rawValue: any): string {
+  formattedValue(rawValue: BillValue): string {
 
     if (rawValue === undefined)
       return '';
       
-    let cleanedValue = whiteSpaceRemovedAndUpperCase(rawValue.toString());
+    const cleanedValue = whiteSpaceRemovedAndUpperCase(rawValue.toString());
 
     if (cleanedValue.startsWith('RF'))
-      return formatISOReference(rawValue);
+      return formatISOReference(cleanedValue);
     
     if (/^\d+$/.test(cleanedValue))
-      return formatQRReference(rawValue);
+      return formatQRReference(cleanedValue);
 
     return rawValue.toString().trim();
   }
 
-  rawValue(formattedValue: string): any {
+  rawValue(formattedValue: string): BillValue {
     return whiteSpaceRemoved(formattedValue);
   }
 }

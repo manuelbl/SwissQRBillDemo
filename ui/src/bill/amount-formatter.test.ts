@@ -5,6 +5,7 @@
 // https://opensource.org/licenses/MIT
 //
 
+import { expect, test } from 'vitest';
 import { AmountFormatter } from "./amount-formatter";
 
 

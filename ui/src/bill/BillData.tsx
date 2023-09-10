@@ -13,7 +13,7 @@ import { QrBill } from '../qrbill-api/qrbill';
 import { validateBill } from '../qrbill-api/qrbill-api';
 import { ValidationResponse } from '../qrbill-api/validation-response';
 import { createISO11649, createQRReference, isQRIBAN, whiteSpaceRemoved } from './payments';
-import { ibanFormatter, referenceFormatter } from './bill-helper';
+import { BillValue, ibanFormatter, referenceFormatter } from './bill-helper';
 import { AmountFormatter } from './amount-formatter';
 import PreviewDialog from './PreviewDialog';
 import FormattedTextEnh from './FormattedTextEnh';
@@ -21,7 +21,7 @@ import FormattedTextEnh from './FormattedTextEnh';
 /**
  * BillData props
  */
-type BillDataProps = {
+interface BillDataProps {
   /**
    * QR bill data to edit
    */
@@ -30,18 +30,16 @@ type BillDataProps = {
   /**
    * Function to update the bill data.
    */
-  updateField: (path: string, value: any) => void;
-};
+  updateField: (path: string, value: BillValue) => void;
+}
 
 /**
  * Form to edit QR bill data.
  */
-const BillData: React.FC<BillDataProps> = props => {
-
-  const { bill, updateField } = props;
+const BillData = ({ bill, updateField }: BillDataProps) => {
 
   // Validation error messages currently display in the UI (pairs of field ID / message)
-  const [errorMessages, setErrorMessages] = useState({} as { [fieldId: string]: string });
+  const [errorMessages, setErrorMessages] = useState({} as Record<string, string>);
 
   // Server communication error message
   const [serverError, setServerError] = useState(undefined as string | undefined);
@@ -51,11 +49,19 @@ const BillData: React.FC<BillDataProps> = props => {
   // Amount formatter (dependent on currently selected language)
   const amountFormatter = useMemo(() => new AmountFormatter(i18n.language + '-CH'), [i18n.language]);
 
+  const extractReasonMessage = (reason: unknown) => {
+    if (typeof reason === 'object') {
+      const err = reason as { message?: string };
+      return err.message ?? 'unknown error';
+    }
+    return 'unknown error';
+  }
+
   // Asynchronously validate bill on server-side
   const validateData = useCallback((bill: QrBill) => {
     validateBill(bill, i18n.language)
       .then((response) => { extractErrorMessages(response); setServerError(undefined); })
-      .catch((reason) => setServerError(reason.message));
+      .catch((reason) => setServerError(extractReasonMessage(reason)));
   }, [i18n.language]);
 
   // Whenever the bill changes, validate it (and on initial display)
@@ -68,7 +74,7 @@ const BillData: React.FC<BillDataProps> = props => {
    * @param path path within `bill` (= field ID)
    * @param newValue new value
    */
-  const updateBillField = (path: string, newValue: any) => {
+  const updateBillField = (path: string, newValue: BillValue) => {
     updateField(path, newValue);
   }
 
@@ -99,7 +105,7 @@ const BillData: React.FC<BillDataProps> = props => {
     // validate the bill to get the bill ID (required for constructing the image URLs)
     validateBill(bill, i18n.language)
       .then((response) => { setBillId(response.billID); setServerError(undefined); })
-      .catch((reason) => setServerError(reason.message));
+      .catch((reason) => setServerError(extractReasonMessage(reason)));
   }
 
   // Closes the preview dialog
@@ -245,21 +251,19 @@ const BillData: React.FC<BillDataProps> = props => {
   );
 }
 
-type SelectExProps = {
+interface SelectExProps {
   fieldId: string;
   value: string;
   labelKey: string;
   itemKeys: string[];
   itemsLabelKey: string;
-  updateField: (path: string, value: any) => void;
-};
+  updateField: (path: string, value: BillValue) => void;
+}
 
 /**
  * Select (list of options) with translated label and items
  */
-const SelectEx: React.FC<SelectExProps> = props => {
-
-  const { fieldId, value, labelKey, itemKeys, itemsLabelKey, updateField } = props;
+const SelectEx = ({ fieldId, value, labelKey, itemKeys, itemsLabelKey, updateField }: SelectExProps) => {
 
   const { t } = useTranslation();
 
@@ -277,15 +281,15 @@ const SelectEx: React.FC<SelectExProps> = props => {
   );
 }
 
-type ReferenceAutoCompleteProps = {
+interface ReferenceAutoCompleteProps {
   /** Value to edit */
-  value: any;
+  value: BillValue;
   /** Account number */
   account?: string;
   /** Error messages (pairs of field ID and error message) */
-  errorMessages?: { [fieldId: string]: string };
+  errorMessages?: Record<string, string>;
   /** Functions to update the value */
-  updateField: (fieldId: string, value: any) => void;
+  updateField: (fieldId: string, value: BillValue) => void;
 }
 
 /**
@@ -294,9 +298,7 @@ type ReferenceAutoCompleteProps = {
  * Depending if a QR IBAN or a regular IBAN has been entered, the formatting and
  * autocompletion work differently.
  */
-const ReferenceAutoComplete: React.FC<ReferenceAutoCompleteProps> = props => {
-
-  const { value, account, errorMessages, updateField } = props;
+const ReferenceAutoComplete = ({ value, account, errorMessages, updateField }: ReferenceAutoCompleteProps) => {
 
   const formattedValue = useMemo(() => referenceFormatter.formattedValue(value), [value]);
   const [editValue, setEditValue] = useState(formattedValue);
@@ -311,7 +313,7 @@ const ReferenceAutoComplete: React.FC<ReferenceAutoCompleteProps> = props => {
    */
   const updateOptions = (value: string) => {
     const suggestions: string[] = [];
-    let str = whiteSpaceRemoved(value.toUpperCase());
+    const str = whiteSpaceRemoved(value.toUpperCase());
 
     // add check digit at the end
     if (isQRIBAN(account)) {

@@ -1,9 +1,9 @@
-/*
- * Swiss QR Bill Generator
- * Copyright (c) 2022 Manuel Bleichenbacher
- * Licensed under MIT License
- * https://opensource.org/licenses/MIT
- */
+//
+// Swiss QR Bill Generator
+// Copyright (c) 2022 Manuel Bleichenbacher
+// Licensed under MIT License
+// https://opensource.org/licenses/MIT
+//
 
 // Helper functions for payments
 

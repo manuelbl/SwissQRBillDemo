@@ -7,8 +7,9 @@
 
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import NavBar from './NavBar';
 import { render } from './test-utils';
+import { expect, test } from 'vitest';
+import NavBar from './NavBar';
 
 
 test('Navigation to about page works', async () => {

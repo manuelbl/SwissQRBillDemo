@@ -5,6 +5,7 @@
 // https://opensource.org/licenses/MIT
 //
 
+import { expect, test } from "vitest";
 import { createISO11649, createQRReference, formatIBAN, formatISOReference, formatQRReference, isQRIBAN, nonAlnumRemoved, nonDigitRemoved, whiteSpaceRemoved, whiteSpaceRemovedAndUpperCase } from "./payments";
 
 test('whitespaceRemoved() works correctly', () => {

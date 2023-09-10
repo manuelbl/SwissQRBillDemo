@@ -6,10 +6,10 @@
 //
 
 import { Typography } from "@mui/material";
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 
-const About: React.FC<{}> = _props => {
+const About = () => {
 
   const { t } = useTranslation();
 

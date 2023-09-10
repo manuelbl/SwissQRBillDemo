@@ -6,13 +6,16 @@
 //
 
 import { fireEvent, screen } from '@testing-library/react';
-import BillData from './BillData';
 import { render } from '../app/test-utils';
 import { Address } from '../qrbill-api/address';
 import { BillFormat } from '../qrbill-api/bill-format';
 import { QrBill } from '../qrbill-api/qrbill';
 import { ValidationResponse } from '../qrbill-api/validation-response';
-import { validateBill } from '../qrbill-api/qrbill-api';
+import { beforeEach, expect, test, vi } from 'vitest';
+import { BillValue } from './bill-helper';
+import BillData from './BillData';
+
+vi.mock('../qrbill-api/qrbill-api');
 
 const sampleAddress: Address = {
   name: 'name',
@@ -44,46 +47,47 @@ const mockValidationResponse: ValidationResponse = {
   billID: 'abcdefg',
 };
 
-jest.mock('../qrbill-api/qrbill-api');
-
+const simpleMocks = {
+  updateField: (_path: string, _value: BillValue) => {
+    // nothing to do in this test
+  }
+}
 
 beforeEach(() => {
-  (validateBill as jest.Mock).mockResolvedValue(mockValidationResponse);
+  vi.spyOn(simpleMocks, 'updateField');
 });
 
 
 test('bill data form is shown', async () => {
-  const updateField = jest.fn();
+  const api = await import('../qrbill-api/qrbill-api');
+  api.validateBill = vi.fn().mockResolvedValue(mockValidationResponse);
   
-  render(<BillData bill={sampleBill} updateField={updateField} />);
+  render(<BillData bill={sampleBill} updateField={simpleMocks.updateField} />);
 
   const text = await screen.findByText(/account_payable_to/i);
   expect(text).toBeInTheDocument();
 
   const accountField = screen.getByLabelText(/^account/i);
   expect(accountField).toHaveAttribute('value', 'CH12 3123 123');
-  expect(updateField).not.toHaveBeenCalled();
-  expect(validateBill).toBeCalledTimes(1);
+  expect(simpleMocks.updateField).not.toHaveBeenCalled();
+  expect(api.validateBill).toBeCalledTimes(1);
 });
 
 
 test('updateField is called', async () => {
-  const updateField = jest.fn();
-
-  render(<BillData bill={sampleBill} updateField={updateField} />);
+  render(<BillData bill={sampleBill} updateField={simpleMocks.updateField} />);
   const accountField = await screen.findByLabelText(/^account/i);
 
   fireEvent.change(accountField, { target: { value: 'CH45679876'} });
   fireEvent.blur(accountField);
-  await new Promise(process.nextTick);
+  await new Promise((resolve) => process.nextTick(resolve));
 
   expect(accountField).toHaveAttribute('value', 'CH45 6798 76');
-  expect(updateField).toHaveBeenCalled();
+  expect(simpleMocks.updateField).toHaveBeenCalled();
 });
 
 test('reference is formatted', async () => {
-  const updateField = jest.fn();
-  render(<BillData bill={sampleBill} updateField={updateField} />);
+  render(<BillData bill={sampleBill} updateField={simpleMocks.updateField} />);
   
   const referenceField = await screen.findByLabelText(/^reference/i);
 
@@ -91,5 +95,5 @@ test('reference is formatted', async () => {
   fireEvent.blur(referenceField);
 
   expect(referenceField).toHaveAttribute('value', 'RF47 ABC1 23');
-  expect(updateField).toHaveBeenCalled();
+  expect(simpleMocks.updateField).toHaveBeenCalled();
 });

@@ -7,11 +7,12 @@
 
 import { screen } from '@testing-library/react';
 import { render } from '../app/test-utils';
+import { expect, test, vi } from 'vitest';
 import PreviewDialog from './PreviewDialog';
 
 
 test('preview dialog is shown', () => {
-  const close = jest.fn();
+  const close = vi.fn();
   const {rerender} = render(<PreviewDialog billId={undefined} outputSize='qr-bill-only' isOpen={false} close={close} />);
 
   rerender(<PreviewDialog billId={undefined} outputSize='qr-bill-only' isOpen={true} close={close} />);
@@ -20,7 +21,7 @@ test('preview dialog is shown', () => {
 });
 
 test('download button becomes active', () => {
-  const close = jest.fn();
+  const close = vi.fn();
   const {rerender} = render(<PreviewDialog billId={undefined} outputSize='qr-bill-only' isOpen={true} close={close} />);
   
   const downloadPdfButton = screen.getByRole('link', {name: 'download_pdf'});
@@ -30,4 +31,3 @@ test('download button becomes active', () => {
   rerender(<PreviewDialog billId={'abc'} outputSize='qr-bill-only' isOpen={false} close={close} />);
   expect(downloadPdfButton).not.toHaveAttribute('aria-disabled');
 });
-

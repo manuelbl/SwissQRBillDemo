@@ -22,6 +22,6 @@ export async function validateBill(bill: QrBill, language: string): Promise<Vali
     if (response.status !== 200)
         throw new Error(`${response.status}: ${response.statusText}`);
 
-    const validationResponse: ValidationResponse = await response.json();
+    const validationResponse: ValidationResponse = await response.json() as ValidationResponse;
     return validationResponse;
 }

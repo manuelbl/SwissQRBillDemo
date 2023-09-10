@@ -22,6 +22,11 @@ i18n
         backend: {
             loadPath: '/qrbill/locales/{{lng}}/{{ns}}.json',
         },
+    })
+    .then(() => {
+        // nothing to do (just silence the linter)
+    }, () => {
+        // nothing to do (just silence the linter)
     });
 
 export default i18n;

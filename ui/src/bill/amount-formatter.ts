@@ -1,10 +1,11 @@
-/*
- * Swiss QR Bill Generator
- * Copyright (c) 2022 Manuel Bleichenbacher
- * Licensed under MIT License
- * https://opensource.org/licenses/MIT
- */
+//
+// Swiss QR Bill Generator
+// Copyright (c) 2022 Manuel Bleichenbacher
+// Licensed under MIT License
+// https://opensource.org/licenses/MIT
+//
 
+import { BillValue } from "./bill-helper";
 import { FieldFormatter } from "./field-formatter";
 
 /**
@@ -30,7 +31,7 @@ export class AmountFormatter implements FieldFormatter {
     return Math.round(rawValue * 100) / 100;
   }
 
-  rawValue(formattedValue: string): any {
+  rawValue(formattedValue: string): BillValue {
     let cleanedValue = formattedValue.replace(this.cleaner, '');
     if (cleanedValue === '')
       return undefined;
@@ -45,7 +46,7 @@ export class AmountFormatter implements FieldFormatter {
     return AmountFormatter.rounded(num);
   }
 
-  formattedValue(rawValue: any): string {
+  formattedValue(rawValue: BillValue): string {
     if (rawValue === undefined)
       return '';
     

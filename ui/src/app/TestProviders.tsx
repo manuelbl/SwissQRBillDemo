@@ -5,13 +5,11 @@
 // https://opensource.org/licenses/MIT
 //
 
-import React, { FC, ReactElement } from 'react'
-import { render, RenderOptions } from '@testing-library/react'
 import { ThemeProvider } from '@mui/material'
 import { baseTheme } from './theme'
 import { BrowserRouter } from 'react-router-dom'
 
-const AllTheProviders: FC<{ children: React.ReactNode }> = ({ children }) => {
+export const TestProviders = ({children}: {children: JSX.Element}) => {
   return (
     <BrowserRouter>
       <ThemeProvider theme={baseTheme}>
@@ -20,11 +18,3 @@ const AllTheProviders: FC<{ children: React.ReactNode }> = ({ children }) => {
     </BrowserRouter>
   )
 }
-
-const customRender = (
-  ui: ReactElement,
-  options?: Omit<RenderOptions, 'wrapper'>,
-) => render(ui, { wrapper: AllTheProviders, ...options })
-
-export * from '@testing-library/react'
-export { customRender as render }

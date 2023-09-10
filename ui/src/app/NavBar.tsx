@@ -8,12 +8,11 @@
 import { AppBar, Box, Button, IconButton, Toolbar } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { useTranslation } from 'react-i18next';
-import React from 'react';
 
 /**
  * Navigation bar at the top
  */
-const NavBar: React.FC<{}> = _props => {
+const NavBar = () => {
 
   const { t } = useTranslation();
 

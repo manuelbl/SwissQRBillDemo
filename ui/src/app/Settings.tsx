@@ -7,7 +7,6 @@
 
 import { Button, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -34,9 +33,15 @@ const languages: Language[] = [
 /**
  * Settings page (for selecting the language)
  */
-const Settings: React.FC<{}> = _props => {
+const Settings = () => {
 
   const { t, i18n } = useTranslation();
+
+  const changeLanguage = (lang: string) => {
+    void (async() => {
+      await i18n.changeLanguage(lang);
+    })();
+  }
 
   return (
     <Grid container spacing={2}>
@@ -44,7 +49,7 @@ const Settings: React.FC<{}> = _props => {
       {
         languages.map((lang: Language) => (
           <Grid key={lang.code}>
-            <Button variant='contained' disabled={lang.code === i18n.language} onClick={() => i18n.changeLanguage(lang.code)}>{lang.nativeName}</Button>
+            <Button variant='contained' disabled={lang.code === i18n.language} onClick={() => changeLanguage(lang.code)}>{lang.nativeName}</Button>
           </Grid>
         ))
       }
