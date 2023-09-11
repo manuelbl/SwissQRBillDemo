@@ -176,7 +176,7 @@ public class PostalCodeData {
 
     private void load() {
         try {
-            URL u = new URL("https://data.geo.admin.ch/ch.swisstopo-vd.ortschaftenverzeichnis_plz/PLZO_CSV_LV03.zip");
+            URL u = new URL("https://data.geo.admin.ch/ch.swisstopo-vd.ortschaftenverzeichnis_plz/ortschaftenverzeichnis_plz/ortschaftenverzeichnis_plz_2056.csv.zip");
             HttpURLConnection connection = (HttpURLConnection) u.openConnection();
             connection.setInstanceFollowRedirects(true);
             connection.connect();
