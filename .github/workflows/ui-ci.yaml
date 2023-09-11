@@ -1,0 +1,24 @@
+name: User Interface CI
+
+on: [push, pull_request]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: 'yarn'
+      - name: Build
+        run: yarn build
+        working-directory: ./ui
+      - name: Test
+        run: yarn ci
+        working-directory: ./ui
+      - name: Lint
+        run: yarn lint
+        working-directory: ./ui
