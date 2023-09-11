@@ -45,7 +45,7 @@ public class MessageLocalizer {
         ResourceBundle bundle = ResourceBundle.getBundle("messages", locale);
 
         String message = bundle.getString(messageKey);
-        if (messageParameters != null && messageParameters.size() > 0) {
+        if (messageParameters != null && messageParameters.isEmpty()) {
             MessageFormat formatter = new MessageFormat(message, locale);
             message = formatter.format(messageParameters.toArray(new Object[0]));
         }

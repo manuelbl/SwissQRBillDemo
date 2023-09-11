@@ -36,6 +36,8 @@ import java.util.zip.InflaterInputStream;
  * </p>
  */
 public class BillId {
+    private BillId() {}
+
     /**
      * Generates an ID that encodes the entire bill data.
      *

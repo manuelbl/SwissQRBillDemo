@@ -207,7 +207,7 @@ public class PostalCodeData {
             try (InputStreamReader reader = new InputStreamReader(zis, charset);
                  BufferedReader lineReader = new BufferedReader(reader)) {
 
-                lineReader.readLine();
+                lineReader.readLine(); // NOSONAR (ignore header line)
 
                 while (true) {
                     String line = lineReader.readLine();

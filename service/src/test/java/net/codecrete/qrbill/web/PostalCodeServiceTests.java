@@ -77,7 +77,7 @@ class PostalCodeServiceTests {
 
         assertThat(postalCodes)
                 .isNotNull()
-                .hasSize(0);
+                .isEmpty();
     }
 
     @Test
