@@ -1,6 +1,6 @@
 # QR Bill UI
 
-This project uses React 18, React Router 6, Vite xxx, Typescript 4.8, MUI 5.4 and yarn.
+This project uses React 18, React Router 6, Vite xxx, Typescript 5.2, MUI 5.4 and yarn.
 
 
 ## Development mode
@@ -11,7 +11,7 @@ To run the app in development mode, type:
 yarn dev
 ```
 
-The app should automatically will be available at [http://localhost:5173/qrbill](http://localhost:5173/qrbill) (the link is also displayed in the console).
+The app should automatically be available at [http://localhost:5173/qrbill](http://localhost:5173/qrbill) (the link is also displayed in the console).
 
 If you make changes to the source code, the app will automatically reload.
 
