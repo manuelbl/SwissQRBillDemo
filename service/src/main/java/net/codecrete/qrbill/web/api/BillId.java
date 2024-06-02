@@ -45,6 +45,7 @@ public class BillId {
      * @param billFormat the billFormat
      * @return the generated ID
      */
+    @SuppressWarnings("java:S112")
     static String generate(String qrCodeText, BillFormat billFormat) {
 
         BillPayload payload = new BillPayload();
@@ -64,7 +65,7 @@ public class BillId {
             encodedData = buffer.toByteArray();
 
         } catch (Exception e) {
-            throw new RuntimeException(e); // NOSONAR
+            throw new RuntimeException(e);
         }
 
         String id = new String(encodedData, StandardCharsets.US_ASCII);

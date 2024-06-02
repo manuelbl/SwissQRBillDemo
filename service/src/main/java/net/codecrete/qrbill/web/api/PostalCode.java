@@ -6,9 +6,10 @@
 //
 package net.codecrete.qrbill.web.api;
 
+@SuppressWarnings("java:S1700")
 public class PostalCode {
 
-    private String postalCode; // NOSONAR
+    private String postalCode;
     private String town;
 
     public String getPostalCode() {

@@ -51,8 +51,8 @@ public class TestHelpers {
         return new Condition<>(a -> {
             if (a.length < 1000)
                 return false;
-            String text = new String(a, 0, 8, StandardCharsets.UTF_8);
-            return text.equals("%PDF-1.4");
+            String text = new String(a, 0, 7, StandardCharsets.UTF_8);
+            return text.equals("%PDF-1.");
         },"looks like valid PDF content");
     }
 }

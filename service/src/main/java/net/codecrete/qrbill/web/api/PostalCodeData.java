@@ -10,7 +10,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -27,10 +28,10 @@ public class PostalCodeData {
 
     public List<PostalCode> suggestPostalCodes(String country, String substring) {
 
-        if (country != null && country.length() != 0 && !country.equals("CH"))
+        if (country != null && !country.isEmpty() && !country.equals("CH"))
             return EMPTY_RESULT;
 
-        if (substring == null || substring.length() == 0)
+        if (substring == null || substring.isEmpty())
             return EMPTY_RESULT;
 
         checkData();
@@ -174,10 +175,11 @@ public class PostalCodeData {
             load();
     }
 
+    @SuppressWarnings("java:S1075")
     private void load() {
         try {
-            URL u = new URL("https://data.geo.admin.ch/ch.swisstopo-vd.ortschaftenverzeichnis_plz/ortschaftenverzeichnis_plz/ortschaftenverzeichnis_plz_2056.csv.zip");
-            HttpURLConnection connection = (HttpURLConnection) u.openConnection();
+            URI u = new URI("https://data.geo.admin.ch/ch.swisstopo-vd.ortschaftenverzeichnis_plz/ortschaftenverzeichnis_plz/ortschaftenverzeichnis_plz_2056.csv.zip");
+            HttpURLConnection connection = (HttpURLConnection) u.toURL().openConnection();
             connection.setInstanceFollowRedirects(true);
             connection.connect();
 
@@ -192,12 +194,13 @@ public class PostalCodeData {
 
             setupSortedArrays(postalCodeList);
 
-        } catch (IOException e) {
+        } catch (IOException | URISyntaxException e) {
             throw new PostalCodeDataException(e);
         }
 
     }
 
+    @SuppressWarnings({"java:S2677", "java:S1168"})
     private List<PostalCode> readCSV(byte[] zipData, Charset charset) throws IOException {
         List<PostalCode> postalCodeList = new ArrayList<>();
         boolean containsZurich = false;
@@ -207,7 +210,7 @@ public class PostalCodeData {
             try (InputStreamReader reader = new InputStreamReader(zis, charset);
                  BufferedReader lineReader = new BufferedReader(reader)) {
 
-                lineReader.readLine(); // NOSONAR (ignore header line)
+                lineReader.readLine();
 
                 while (true) {
                     String line = lineReader.readLine();
@@ -222,7 +225,7 @@ public class PostalCodeData {
         }
 
         if (!containsZurich)
-            return null; // NOSONAR
+            return null;
 
         return postalCodeList;
     }

@@ -32,7 +32,7 @@ class PostalCodeDataTests {
     void singleMatch() {
         List<PostalCodeData.PostalCode> result = postalCodeData.suggestPostalCodes("CH", "8302");
         assertThat(result).hasSize(1);
-        assertThat(result.get(0)).satisfies(pc -> {
+        assertThat(result.getFirst()).satisfies(pc -> {
             assertThat(pc.code).isEqualTo("8302");
             assertThat(pc.town).isEqualTo("Kloten");
         });
@@ -139,18 +139,18 @@ class PostalCodeDataTests {
     @Test
     void noMatch() {
         List<PostalCodeData.PostalCode> result = postalCodeData.suggestPostalCodes("CH", "abc");
-        assertThat(result).hasSize(0);
+        assertThat(result).isEmpty();
     }
 
     @Test
     void noMatchNumeric() {
         List<PostalCodeData.PostalCode> result = postalCodeData.suggestPostalCodes("CH", "0123");
-        assertThat(result).hasSize(0);
+        assertThat(result).isEmpty();
     }
 
     @Test
     void unsupportedCountry() {
         List<PostalCodeData.PostalCode> result = postalCodeData.suggestPostalCodes("DE", "12");
-        assertThat(result).hasSize(0);
+        assertThat(result).isEmpty();
     }
 }

@@ -69,7 +69,7 @@ class ValidationTests {
         assertThat(response.getValidationMessages())
                 .isNotNull()
                 .hasSize(1);
-        assertThat(response.getValidationMessages().get(0)).satisfies(m -> {
+        assertThat(response.getValidationMessages().getFirst()).satisfies(m -> {
             assertThat(m.getType()).isEqualTo(ValidationMessage.TypeEnum.WARNING);
             assertThat(m.getField()).isEqualTo("creditor.town");
             assertThat(m.getMessageKey()).isEqualTo("field_value_clipped");

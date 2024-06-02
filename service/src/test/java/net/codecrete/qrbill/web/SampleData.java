@@ -40,6 +40,7 @@ class SampleData {
         creditor.setCountryCode("CH");
         bill.setCreditor(creditor);
         bill.setReference("RF18539007547034");
+        bill.setAlternativeSchemes(null);
         return bill;
     }
 

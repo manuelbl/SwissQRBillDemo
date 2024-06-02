@@ -61,6 +61,7 @@ class DtoConverter {
         return bill;
     }
 
+    @SuppressWarnings({"java:S1874", "deprecation"})
     private static Address toDtoAddress(net.codecrete.qrbill.generator.Address address) {
         if (address == null)
             return null;
@@ -78,6 +79,7 @@ class DtoConverter {
         return dto;
     }
 
+    @SuppressWarnings({"java:S1874", "deprecation"})
     private static net.codecrete.qrbill.generator.Address fromDtoAddress(Address dto) {
         if (dto == null)
             return null;
@@ -126,9 +128,10 @@ class DtoConverter {
         return format;
     }
 
+    @SuppressWarnings("java:S1168")
     private static List<AlternativeScheme> toDtoSchemes(net.codecrete.qrbill.generator.AlternativeScheme[] alternativeSchemes) {
         if (alternativeSchemes == null)
-            return null; // NOSONAR
+            return null;
 
         List<AlternativeScheme> dto = new ArrayList<>();
         for (net.codecrete.qrbill.generator.AlternativeScheme scheme : alternativeSchemes) {
@@ -143,9 +146,10 @@ class DtoConverter {
         return dto;
     }
 
+    @SuppressWarnings("java:S1168")
     private static net.codecrete.qrbill.generator.AlternativeScheme[] fromDtoSchemes(List<AlternativeScheme> dto) {
         if (dto == null)
-            return null; // NOSONAR
+            return null;
 
         net.codecrete.qrbill.generator.AlternativeScheme[] schemes
                 = new net.codecrete.qrbill.generator.AlternativeScheme[dto.size()];

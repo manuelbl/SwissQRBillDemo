@@ -138,7 +138,7 @@ XY;XYService;54321""";
         assertThat(response.getValidationMessages())
                 .isNotNull()
                 .hasSize(1);
-        assertThat(response.getValidationMessages().get(0)).satisfies(m -> {
+        assertThat(response.getValidationMessages().getFirst()).satisfies(m -> {
             assertThat(m.getType()).isEqualTo(ValidationMessage.TypeEnum.ERROR);
             assertThat(m.getField()).isEqualTo("qrText");
         });

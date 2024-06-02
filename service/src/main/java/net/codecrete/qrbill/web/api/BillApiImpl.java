@@ -7,7 +7,6 @@
 package net.codecrete.qrbill.web.api;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -25,11 +24,14 @@ import java.util.Locale;
 @ApplicationScoped
 public class BillApiImpl implements BillApi {
 
-    @Inject
-    MessageLocalizer messageLocalizer;
+    private final MessageLocalizer messageLocalizer;
 
-    @Inject
-    HttpHeaders httpHeaders;
+    private final HttpHeaders httpHeaders;
+
+    public BillApiImpl(MessageLocalizer messageLocalizer, HttpHeaders httpHeaders) {
+        this.messageLocalizer = messageLocalizer;
+        this.httpHeaders = httpHeaders;
+    }
 
     @Override
     public ValidationResponse decodeQRCode(QrCodeInformation qrCodeInformation) {
@@ -109,6 +111,9 @@ public class BillApiImpl implements BillApi {
                     = DtoConverter.toDtoValidationMessageList(result.getValidationMessages());
             messageLocalizer.translateMessages(messages, httpHeaders);
             response.setValidationMessages(messages);
+        } else {
+            // backward compatibility
+            response.setValidationMessages(null);
         }
         response.setValidatedBill(DtoConverter.toDtoQrBill(validatedBill));
 

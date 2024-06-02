@@ -24,7 +24,7 @@ public class MessageLocalizer {
      * Creates an instance.
      */
     public MessageLocalizer() {
-        defaultLocale = new Locale("de", "CH");
+        defaultLocale = new Locale.Builder().setLanguage("de").setRegion("CH").build();
     }
 
     public void translateMessages(List<ValidationMessage> messages, HttpHeaders headers) {
@@ -32,7 +32,7 @@ public class MessageLocalizer {
         List<Locale> locales = headers.getAcceptableLanguages();
         Locale locale;
         if (locales != null && !locales.isEmpty())
-            locale = locales.get(0);
+            locale = locales.getFirst();
         else
             locale = defaultLocale;
 
