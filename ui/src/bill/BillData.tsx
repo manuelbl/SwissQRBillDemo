@@ -227,7 +227,7 @@ const BillData = ({ bill, updateField }: BillDataProps) => {
                     </Grid>
                     <Grid xs={5}>
                       <SelectEx fieldId='format.outputSize' value={bill.format?.outputSize ?? 'qr-bill-only'} labelKey='output_size'
-                        itemKeys={['qr-bill-only', 'a4-portrait-sheet', 'qr-code-only']} itemsLabelKey='output_sizes' updateField={updateBillField} />
+                        itemKeys={['qr-bill-only', 'a4-portrait-sheet', 'qr-code-only', 'payment-part-only']} itemsLabelKey='output_sizes' updateField={updateBillField} />
                     </Grid>
                     <Grid xs={7}>
                       <SelectEx fieldId='format.separatorType' value={bill.format?.separatorType ?? 'dashed-line-with-scissors'} labelKey='separator_type'

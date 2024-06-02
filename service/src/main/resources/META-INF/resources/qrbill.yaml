@@ -262,6 +262,7 @@ components:
           - "qr-bill-only"
           - "qr-bill-with-horizontal-line"
           - "qr-code-only"
+          - "payment-part-only"
         separatorType:
           type: string
           description: "Type of separator lines above and between payment part and receipt"

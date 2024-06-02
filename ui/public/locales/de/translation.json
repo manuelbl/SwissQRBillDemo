@@ -29,7 +29,8 @@
     "output_sizes": {
         "qr-bill-only": "Nur QR-Rechnung",
         "a4-portrait-sheet": "A4 Hochformat",
-        "qr-code-only": "Nur QR-Code"
+        "qr-code-only": "Nur QR-Code",
+        "payment-part-only": "Nur Zahlteil"
     },
     "language": "Sprache",
     "languages": {
@@ -54,9 +55,10 @@
     "download_pdf": "Als PDF herunterladen",
     "download_svg": "Als SVG herunterladen",
     "select": "Auswählen",
-    "img_qrbill_payment_part": "QR-Rechnung Zahlteil",
+    "img_qrbill": "QR-Rechnung",
     "img_qrbill_sheet": "QR-Rechnung Blatt",
     "img_qrcode": "QR Code",
+    "img_payment_part": "QR-Rechnung Zahlteil",
     "qrbill_example": "QR-Rechnung-Beispiel {{num}}",
     "enter_number": "Zahl eingeben",
     "logo_alt": "Swiss QR Bill Generator",

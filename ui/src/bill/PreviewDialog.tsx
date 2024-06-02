@@ -12,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 const qrBillDummyImage = "data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='794px' height='397px' viewBox='0 0 794 397' version='1.1' xmlns='http://www.w3.org/2000/svg' style='background: %23FFFFFF;'%3E%3Cg stroke='none' fill='none'%3E%3Crect fill='%23DDDDDD' x='19' y='18' width='174' height='179'%3E%3C/rect%3E%3Crect fill='%23DDDDDD' x='19' y='256' width='101' height='27'%3E%3C/rect%3E%3Crect fill='%23DDDDDD' x='446' y='18' width='256' height='235'%3E%3C/rect%3E%3Crect fill='%23DDDDDD' x='252' y='18' width='88' height='16'%3E%3C/rect%3E%3Crect fill='%23DDDDDD' x='252' y='63' width='176' height='175'%3E%3C/rect%3E%3Crect fill='%23DDDDDD' x='252' y='256' width='107' height='27'%3E%3C/rect%3E%3Cpath d='M235.5,0 L235.5,397' stroke='%23DDDDDD' stroke-width='2' stroke-linecap='square'%3E%3C/path%3E%3C/g%3E%3C/svg%3E";
 const a4PortraitDummyImage = "data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='794px' height='1123px' viewBox='0 0 794 1123' version='1.1' xmlns='http://www.w3.org/2000/svg' style='background: %23FFFFFF;'%3E%3Cg stroke='none' fill='none'%3E%3Crect fill='%23DDDDDD' x='19' y='744' width='174' height='179'%3E%3C/rect%3E%3Crect fill='%23DDDDDD' x='19' y='982' width='101' height='27'%3E%3C/rect%3E%3Crect fill='%23DDDDDD' x='446' y='744' width='256' height='235'%3E%3C/rect%3E%3Crect fill='%23DDDDDD' x='252' y='744' width='88' height='16'%3E%3C/rect%3E%3Crect fill='%23DDDDDD' x='252' y='789' width='176' height='175'%3E%3C/rect%3E%3Crect fill='%23DDDDDD' x='252' y='982' width='107' height='27'%3E%3C/rect%3E%3Cpath d='M235.5,726 L235.5,1123' stroke='%23DDDDDD' stroke-width='2' stroke-linecap='square'%3E%3C/path%3E%3C/g%3E%3C/svg%3E";
 const qrCodeDummyImage = "data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='174px' height='174px' viewBox='0 0 174 174' version='1.1' xmlns='http://www.w3.org/2000/svg' style='background: %23DDDDDD;'%3E%3C/svg%3E";
+const paymentPartDummyImage = "data:image/svg+xml,%3C%3Fxml version='1.0' encoding='UTF-8'%3F%3E%3Csvg width='560px' height='397px' viewBox='0 0 560 397' version='1.1' xmlns='http://www.w3.org/2000/svg'%3E%3Cg stroke='none' fill='none'%3E%3Cg transform='translate(19, 18)' fill='%23DDDDDD'%3E%3Crect x='194' y='0' width='256' height='235'%3E%3C/rect%3E%3Crect x='0' y='0' width='88' height='16'%3E%3C/rect%3E%3Crect x='0' y='45' width='176' height='175'%3E%3C/rect%3E%3Crect x='0' y='238' width='107' height='27'%3E%3C/rect%3E%3C/g%3E%3C/g%3E%3C/svg%3E";
 
 interface PreviewDialogProps {
   /**
@@ -54,18 +55,23 @@ const PreviewDialog = ({ billId, isOpen, outputSize, close } :PreviewDialogProps
   if (outputSize === 'qr-bill-only') {
     imageWidth = '793.700';
     imageHeight = '396.850';
-    imageAltKey = 'img_qrbill_payment_part';
+    imageAltKey = 'img_qrbill';
     dummyImage = qrBillDummyImage;
   } else if (outputSize === 'a4-portrait-sheet') {
     imageWidth = '793.700';
     imageHeight = '1122.519';
     imageAltKey = 'img_qrbill_sheet';
     dummyImage = a4PortraitDummyImage;
-  } else {
+  } else if (outputSize == 'qr-code-only') {
     imageWidth = '173.858';
     imageHeight = '173.858';
     imageAltKey = 'img_qrcode';
     dummyImage = qrCodeDummyImage;
+  } else {
+    imageWidth = '559.370';
+    imageHeight = '396.850';
+    imageAltKey = 'img_payment_part';
+    dummyImage = paymentPartDummyImage;
   }
 
   const imageUrl = billId !== undefined ? `/qrbill-api/bill/image/${billId}` : dummyImage;

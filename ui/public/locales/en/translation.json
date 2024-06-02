@@ -30,7 +30,8 @@
     "output_sizes": {
         "qr-bill-only": "QR bill only",
         "a4-portrait-sheet": "A4 portrait",
-        "qr-code-only": "QR code only"
+        "qr-code-only": "QR code only",
+        "payment-part-only": "Payment part only"
     },
     "language": "Language",
     "languages": {
@@ -55,9 +56,10 @@
     "download_pdf": "Download as PDF",
     "download_svg": "Download as SVG",
     "select": "Select",
-    "img_qrbill_payment_part": "QR bill payment part",
+    "img_qrbill": "QR bill",
     "img_qrbill_sheet": "QR bill sheet",
     "img_qrcode": "QR code",
+    "img_payment_part": "QR bill payment part",
     "qrbill_example": "QR bill example {{num}}",
     "enter_number": "Enter number",
     "logo": "Swiss QR Bill Generator",
