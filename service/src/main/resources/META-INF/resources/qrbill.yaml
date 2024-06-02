@@ -1,4 +1,4 @@
-openapi: 3.0.0
+openapi: 3.0.3
 
 info:
   title: "Swiss QR Bill API"
@@ -9,7 +9,7 @@ info:
     - Payment amount and currency
     - Creditor address and account
     - Reference number issued by the creditor
-    - Additional informationn for the recipient of the invoice
+    - Additional information for the recipient of the invoice
     - Debtor address
     - Alternative payment scheme instructions (future use)
 
@@ -21,7 +21,7 @@ info:
     To successfully validate the bill data and generate a QR bill, the following main requirements must be met:
 
     - A valid address must at least contain *name*, *postal code*, *town* and *country ISO code*.
-    - The creditor address and accout number are mandatory.
+    - The creditor address and account number are mandatory.
     - The debtor addresses is optional. If is not used, it must be omitted entirely
       or all address fields must be *null* or empty.
     - The account number must be a valid IBAN of Switzerland or Liechtenstein.
@@ -29,11 +29,11 @@ info:
       or a valid ISO 11649 creditor reference (i.e. the applicable check digits must be valid)
     - The currency must be either *CHF* or *EUR*.
 
-    If fields are too long, they are automaticalluy truncated. If characters outside the restricted range of
+    If fields are too long, they are automatically truncated. If characters outside the restricted range of
     characters are used, they are automatically replaced. The validation result contains warnings about
     truncations and replacements.
 
-  version: 3.0.2
+  version: 3.3.0
   license:
     name: "MIT License"
     url: "https://opensource.org/licenses/MIT"
@@ -131,6 +131,7 @@ paths:
           - "qr-bill-only"
           - "qr-bill-with-horizontal-line"
           - "qr-code-only"
+          - "payment-part-only"
       - in: query
         name: graphicsFormat
         description: "Overrides the graphics format of the generated QR bill (or QR code)"
@@ -191,7 +192,8 @@ components:
         Address of creditor or debtor. Unless the entire object is empty, *name*, *postal code*, *town* and
         *country code* are mandatory. Some fields are mutually exclusive: either *street*, *houseNo*, *town* and
         *postalCode* are used (so called structured addresses) or *addressLine1* and *addressLine2* are used
-        (so called combined elements addresses).
+        (so called combined elements addresses). Combined elements addresses are deprecated as banks will no
+        longer accept payments with that address type, effective November 21, 2025.
       properties:
         addressType:
           type: string
@@ -206,10 +208,16 @@ components:
           description: "First, middle and last name of a natural person or company or organization name of a legal person"
         addressLine1:
           type: string
-          description: "First address line containing street name, house number and P.O. box"
+          description: |
+            First address line containing street name, house number and P.O. box.
+            Deprecated. Use `street` and `houseNo` instead.
+          deprecated: true
         addressLine2:
           type: string
-          description: "Second address line containing postal code and town"
+          description: |
+            Second address line containing postal code and town.
+            Deprecated. Use `postalCode` and `town` instead.
+          deprecated: true
         street:
           type: string
           description: "Street name (without the house number)"
@@ -307,6 +315,8 @@ components:
             $ref: "#/components/schemas/AlternativeScheme"
         format:
           $ref: "#/components/schemas/BillFormat"
+        characterSet:
+          $ref: "#/components/schemas/CharacterSet"
 
     ValidationMessage:
       type: object
@@ -375,6 +385,29 @@ components:
         instruction:
           type: string
           description: "Payment instruction"
+
+    CharacterSet:
+      type: string
+      description: |
+        Character set for payment data.
+        
+        - `latin-1-subset`: Restrictive character set from the original Swiss Payment Standard and original QR bill
+          specification. Valid characters consist of a subset of the printable Latin-1 characters in the Unicode blocks
+          Basic Latin and Latin-1 Supplement.
+        - `extended-latin`: Extended Latin character set.
+          Valid characters are all printable characters from the Unicode blocks Basic Latin (Unicode code points U+0020
+          to U+007E), Latin-1 Supplement (Unicode code points U+00A0 to U+00FF) and Latin Extended A (Unicode code
+          points U+0100 to U+017F) plus a few additional characters (such as the Euro sign). This character set has
+          been introduced with SPS 2022 (November 18, 2022) but may not be used in QR bills until November 21, 2025
+          when all banks are ready to accept messages with this character set.
+        - `full-unicode`: Full Unicode character set. This character set may be used when decoding the QR code text. It
+          is not suitable for generating QR bills or payment messages in general, and it is not covered by the Swiss
+          Payment Standard.
+      enum:
+        - "latin-1-subset"
+        - "extended-latin"
+        - "full-unicode"
+      default: latin-1-subset
 
 externalDocs:
   description: "Find out more about Swiss QR Bill"

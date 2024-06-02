@@ -39,6 +39,7 @@ class DtoConverter {
         dto.setAlternativeSchemes(toDtoSchemes(bill.getAlternativeSchemes()));
         dto.setDebtor(toDtoAddress(bill.getDebtor()));
         dto.setFormat(toDtoBillFormat(bill.getFormat()));
+        dto.setCharacterSet(toDtoCharacterSet(bill.getCharacterSet()));
         return dto;
     }
 
@@ -58,6 +59,7 @@ class DtoConverter {
         bill.setAlternativeSchemes(fromDtoSchemes(dto.getAlternativeSchemes()));
         bill.setDebtor(fromDtoAddress(dto.getDebtor()));
         bill.setFormat(fromDtoBillFormat(dto.getFormat()));
+        bill.setCharacterSet(fromDtoCharacterSet(dto.getCharacterSet()));
         return bill;
     }
 
@@ -235,5 +237,17 @@ class DtoConverter {
         if (separatorType == null)
             return null;
         return SeparatorType.valueOf(separatorType.name());
+    }
+
+    private static CharacterSet toDtoCharacterSet(SPSCharacterSet characterSet) {
+        if (characterSet == null)
+            return null;
+        return CharacterSet.fromValue(characterSet.name().replace('_', '-').toLowerCase());
+    }
+
+    private static SPSCharacterSet fromDtoCharacterSet(CharacterSet characterSet) {
+        if (characterSet == null)
+            return null;
+        return SPSCharacterSet.valueOf(characterSet.name().replace('-', '_').toUpperCase());
     }
 }
