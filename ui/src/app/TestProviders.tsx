@@ -9,7 +9,7 @@ import { ThemeProvider } from '@mui/material'
 import { baseTheme } from './theme'
 import { BrowserRouter } from 'react-router-dom'
 
-export const TestProviders = ({children}: {children: JSX.Element}) => {
+export const TestProviders = ({children}: {children: React.ReactNode}) => {
   return (
     <BrowserRouter>
       <ThemeProvider theme={baseTheme}>
