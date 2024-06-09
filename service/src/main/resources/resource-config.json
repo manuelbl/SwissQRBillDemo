@@ -1,0 +1,15 @@
+{
+  "resources": {
+    "includes": [
+      {
+        "pattern": "messages.*\\.properties"
+      },
+      {
+        "pattern": "qrbill.*\\.properties"
+      },
+      {
+        "pattern": "org/apache/pdfbox/resources/afm/.*\\.afm"
+      }
+    ]
+  }
+}

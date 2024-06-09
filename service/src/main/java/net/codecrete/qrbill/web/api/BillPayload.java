@@ -6,11 +6,13 @@
 //
 package net.codecrete.qrbill.web.api;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import net.codecrete.qrbill.web.model.BillFormat;
 
 /**
  * Data class to generate bill ID
  */
+@RegisterForReflection
 public class BillPayload {
 
     private int version;

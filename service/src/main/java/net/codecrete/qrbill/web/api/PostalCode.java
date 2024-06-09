@@ -6,7 +6,10 @@
 //
 package net.codecrete.qrbill.web.api;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 @SuppressWarnings("java:S1700")
+@RegisterForReflection
 public class PostalCode {
 
     private String postalCode;

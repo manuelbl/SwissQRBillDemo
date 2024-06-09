@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.codecrete.qrbill</groupId>
   <artifactId>qrbill-service</artifactId>
-  <version>3.0.10</version>
+  <version>3.3.1</version>
   <properties>
     <compiler-plugin.version>3.12.1</compiler-plugin.version>
     <maven.compiler.release>21</maven.compiler.release>
@@ -48,6 +48,10 @@
       <groupId>net.codecrete.qrbill</groupId>
       <artifactId>qrbill-generator</artifactId>
       <version>3.3.0</version>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-awt</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -188,7 +192,7 @@
       </activation>
       <properties>
         <skipITs>false</skipITs>
-        <quarkus.package.type>native</quarkus.package.type>
+        <quarkus.native.enabled>true</quarkus.native.enabled>
       </properties>
     </profile>
   </profiles>

@@ -29,3 +29,23 @@ It produces the `qrbill-service-x.x.x-runner.jar` file in the `target/` director
 It is an _über-jar_ including all the dependencies.
 
 The application is now runnable using `java -jar target/qrbill-service-x.x.x-runner.jar`.
+
+## Creating a native executable
+
+You can create a native executable using:
+```shell script
+./mvnw package -Dnative
+```
+
+Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
+```shell script
+./mvnw package -Dnative -Dquarkus.native.container-build=true
+```
+
+Actually used command:
+
+```shell script
+quarkus build --native -Dquarkus.native.container-build=true -Dquarkus.native.container-runtime=podman
+```
+
+
