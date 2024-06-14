@@ -1,0 +1,10 @@
+[Unit]
+Description=Swiss QR Bill Service
+After=network.target
+
+[Container]
+Image=ghcr.io/manuelbl/qrbill/qrbill-service:latest
+PublishPort=8081:8081
+
+[Install]
+WantedBy=multi-user.target

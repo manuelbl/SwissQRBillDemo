@@ -191,6 +191,7 @@ public class BillApiImpl implements BillApi {
 
     private static final MediaType MEDIA_TYPE_APPLICATION_PDF = new MediaType("application", "pdf");
     private static final MediaType MEDIA_TYPE_IMAGE_SVG = new MediaType("image", "svg+xml");
+    private static final MediaType MEDIA_TYPE_IMAGE_PNG = new MediaType("image", "png");
 
     private GraphicsFormat graphicsFormatFromRequestHeader() {
         for (MediaType mediaType : httpHeaders.getAcceptableMediaTypes()) {
@@ -198,13 +199,19 @@ public class BillApiImpl implements BillApi {
                 return GraphicsFormat.SVG;
             if (mediaType.isCompatible(MEDIA_TYPE_APPLICATION_PDF))
                 return GraphicsFormat.PDF;
+            if (mediaType.isCompatible(MEDIA_TYPE_IMAGE_PNG))
+                return GraphicsFormat.PNG;
         }
 
         return null;
     }
 
     private static MediaType getContentType(GraphicsFormat graphicsFormat) {
-        return graphicsFormat == GraphicsFormat.SVG ? MEDIA_TYPE_IMAGE_SVG : MEDIA_TYPE_APPLICATION_PDF;
+        return switch(graphicsFormat) {
+            case SVG -> MEDIA_TYPE_IMAGE_SVG;
+            case PDF -> MEDIA_TYPE_APPLICATION_PDF;
+            case PNG -> MEDIA_TYPE_IMAGE_PNG;
+        };
     }
 
     private Language languageFromRequestHeader() {

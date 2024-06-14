@@ -1,0 +1,49 @@
+POST {{host}}/qrbill-api/bill/validated
+Content-Type: application/json
+
+{
+  "version": "V2_0",
+  "amount": 287.3,
+  "currency": "EUR",
+  "account": "CH450023023099999999A",
+  "creditor": {
+    "name": "Schreinerei Habegger Inc.",
+    "street": "Uetlibergstrasse",
+    "houseNo": "138",
+    "countryCode": "CH",
+    "postalCode": "8045",
+    "town": "Zürich"
+  },
+  "reference": "RF192320QF02T3234UI234",
+  "unstructuredMessage": "Rechnungsnr. 10978 / Auftragsrnr. 3987",
+  "billInformation": "",
+  "debtor": {
+    "name": "Simon Glarner",
+    "street": "Bächliwis",
+    "houseNo": "55",
+    "countryCode": "CH",
+    "postalCode": "8184",
+    "town": "Bachenbülach"
+  },
+  "format": {
+    "language": "de",
+    "outputSize": "qr-bill-only",
+    "separatorType": "dashed-line-with-scissors"
+  }
+}
+
+> {%
+    client.global.set('billID', response.body.billID);
+%}
+
+###
+
+GET  {{host}}/qrbill-api/bill/image/{{billID}}
+
+###
+
+GET  {{host}}/qrbill-api/bill/image/{{billID}}?graphicsFormat=pdf
+
+###
+
+GET  {{host}}/qrbill-api/bill/image/{{billID}}?graphicsFormat=png
