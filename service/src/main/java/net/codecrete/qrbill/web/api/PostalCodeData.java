@@ -205,11 +205,10 @@ public class PostalCodeData {
         List<PostalCode> postalCodeList = new ArrayList<>();
         boolean containsZurich = false;
         try (InputStream in = new ByteArrayInputStream(zipData); ZipInputStream zis = new ZipInputStream(in)) {
-            zis.getNextEntry();
+            for (var entry = zis.getNextEntry(); entry != null; entry = zis.getNextEntry()) {
 
-            try (InputStreamReader reader = new InputStreamReader(zis, charset);
-                 BufferedReader lineReader = new BufferedReader(reader)) {
-
+                InputStreamReader reader = new InputStreamReader(zis, charset);
+                BufferedReader lineReader = new BufferedReader(reader);
                 lineReader.readLine();
 
                 while (true) {
