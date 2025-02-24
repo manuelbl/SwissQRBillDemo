@@ -12,7 +12,7 @@ import { CssBaseline, ThemeProvider } from '@mui/material';
 import { baseTheme } from './app/theme';
 import App from './app/App';
 import './app/i18n';
-import './index.css';
+import './main.css';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root')!

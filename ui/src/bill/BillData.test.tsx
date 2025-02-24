@@ -48,7 +48,8 @@ const mockValidationResponse: ValidationResponse = {
 };
 
 const simpleMocks = {
-  updateField: (_path: string, _value: BillValue) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    updateField: (_path: string, _value: BillValue) => {
     // nothing to do in this test
   }
 }
@@ -80,7 +81,6 @@ test('updateField is called', async () => {
 
   fireEvent.change(accountField, { target: { value: 'CH45679876'} });
   fireEvent.blur(accountField);
-  await new Promise((resolve) => process.nextTick(resolve));
 
   expect(accountField).toHaveAttribute('value', 'CH45 6798 76');
   expect(simpleMocks.updateField).toHaveBeenCalled();

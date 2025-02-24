@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, Autocomplete, Box, Button, Card, CardContent, FormControl, FormGroup, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid2';
 import { useTranslation } from 'react-i18next';
 import { QrBill } from '../qrbill-api/qrbill';
 import { validateBill } from '../qrbill-api/qrbill-api';
@@ -125,111 +125,111 @@ const BillData = ({ bill, updateField }: BillDataProps) => {
       <form onSubmit={(event) => { event.preventDefault(); openPreview(); }}>
         <FormGroup>
           <Grid container rowSpacing={2} columnSpacing={2}>
-            <Grid md={6} xs={12}>
+            <Grid size={{ md:6, xs: 12 }}>
               <Card>
                 <CardContent>
                   <Grid container rowSpacing={2} columnSpacing={1}>
                     <Grid>
                       <Typography gutterBottom variant="h6" component="div">{t('account_payable_to')}</Typography>
                     </Grid>
-                    <Grid xs={12}>
+                    <Grid size={{ xs: 12 }}>
                       <FormattedTextEnh fieldId='account' value={bill.account} labelKey='account' errorMessages={errorMessages} updateField={updateBillField} formatter={ibanFormatter} required />
                     </Grid>
-                    <Grid xs={12}>
+                    <Grid size={{ xs: 12 }}>
                       <FormattedTextEnh fieldId='creditor.name' value={bill.creditor?.name} labelKey='name' errorMessages={errorMessages} updateField={updateBillField} required />
                     </Grid>
-                    <Grid xs={9}>
+                    <Grid size={{ xs: 9 }}>
                       <FormattedTextEnh fieldId='creditor.street' value={bill.creditor?.street} labelKey='street' errorMessages={errorMessages} updateField={updateBillField} />
                     </Grid>
-                    <Grid xs={3}>
+                    <Grid size={{ xs: 3 }}>
                       <FormattedTextEnh fieldId='creditor.houseNo' value={bill.creditor?.houseNo} labelKey='house_number' errorMessages={errorMessages} updateField={updateBillField} />
                     </Grid>
-                    <Grid xs={2}>
+                    <Grid size={{ xs: 2 }}>
                       <FormattedTextEnh fieldId='creditor.countryCode' value={bill.creditor?.countryCode} labelKey='country' errorMessages={errorMessages} updateField={updateBillField} required />
                     </Grid>
-                    <Grid xs={3}>
+                    <Grid size={{ xs: 3 }}>
                       <FormattedTextEnh fieldId='creditor.postalCode' value={bill.creditor?.postalCode} labelKey='postal_code' errorMessages={errorMessages} updateField={updateBillField} required />
                     </Grid>
-                    <Grid xs={7}>
+                    <Grid size={{ xs: 7 }}>
                       <FormattedTextEnh fieldId='creditor.town' value={bill.creditor?.town} labelKey='town' errorMessages={errorMessages} updateField={updateBillField} required />
                     </Grid>
                   </Grid>
                 </CardContent>
               </Card>
             </Grid>
-            <Grid md={6} xs={12}>
+            <Grid size={{ md:6, xs: 12 }}>
               <Card>
                 <CardContent>
                   <Grid container rowSpacing={2} columnSpacing={1}>
-                    <Grid xs={12}>
+                    <Grid size={{ xs: 12 }}>
                       <Typography gutterBottom variant="h6" component="div">{t('payment_details')}</Typography>
                     </Grid>
-                    <Grid xs={3}>
+                    <Grid size={{ xs: 3 }}>
                       <SelectEx fieldId='currency' value={bill.currency ?? 'CHF'} labelKey='currency' itemKeys={['CHF', 'EUR']} itemsLabelKey='currencies' updateField={updateBillField} />
                     </Grid>
-                    <Grid xs={4}>
+                    <Grid size={{ xs: 4 }}>
                       <FormattedTextEnh fieldId='amount' value={bill.amount} isNumeric={true} labelKey='amount' errorMessages={errorMessages} updateField={updateBillField} formatter={amountFormatter} />
                     </Grid>
-                    <Grid xs={12}>
+                    <Grid size={{ xs: 12 }}>
                       <ReferenceAutoComplete value={bill.reference} account={bill.account} errorMessages={errorMessages} updateField={updateBillField} />
                     </Grid>
-                    <Grid xs={12}>
+                    <Grid size={{ xs: 12 }}>
                       <FormattedTextEnh fieldId='unstructuredMessage' value={bill.unstructuredMessage} labelKey='unstructured_msg' errorMessages={errorMessages} updateField={updateBillField} />
                     </Grid>
-                    <Grid xs={12}>
+                    <Grid size={{ xs: 12 }}>
                       <FormattedTextEnh fieldId='billInformation' value={bill.billInformation} labelKey='bill_information' errorMessages={errorMessages} updateField={updateBillField} />
                     </Grid>
                   </Grid>
                 </CardContent>
               </Card>
             </Grid>
-            <Grid md={6} xs={12}>
+            <Grid size={{ md:6, xs: 12 }}>
               <Card>
                 <CardContent>
                   <Grid container rowSpacing={2} columnSpacing={1}>
                     <Grid>
                       <Typography gutterBottom variant="h6" component="div">{t('payable_by')}</Typography>
                     </Grid>
-                    <Grid xs={12}>
+                    <Grid size={{ xs: 12 }}>
                       <FormattedTextEnh fieldId='debtor.name' value={bill.debtor?.name} labelKey='name' errorMessages={errorMessages} updateField={updateBillField} />
                     </Grid>
-                    <Grid xs={9}>
+                    <Grid size={{ xs: 9 }}>
                       <FormattedTextEnh fieldId='debtor.street' value={bill.debtor?.street} labelKey='street' errorMessages={errorMessages} updateField={updateBillField} />
                     </Grid>
-                    <Grid xs={3}>
+                    <Grid size={{ xs: 3 }}>
                       <FormattedTextEnh fieldId='debtor.houseNo' value={bill.debtor?.houseNo} labelKey='house_number' errorMessages={errorMessages} updateField={updateBillField} />
                     </Grid>
-                    <Grid xs={2}>
+                    <Grid size={{ xs: 2 }}>
                       <FormattedTextEnh fieldId='debtor.countryCode' value={bill.debtor?.countryCode} labelKey='country' errorMessages={errorMessages} updateField={updateBillField} />
                     </Grid>
-                    <Grid xs={3}>
+                    <Grid size={{ xs: 3 }}>
                       <FormattedTextEnh fieldId='debtor.postalCode' value={bill.debtor?.postalCode} labelKey='postal_code' errorMessages={errorMessages} updateField={updateBillField} />
                     </Grid>
-                    <Grid xs={7}>
+                    <Grid size={{ xs: 7 }}>
                       <FormattedTextEnh fieldId='debtor.town' value={bill.debtor?.town} labelKey='town' errorMessages={errorMessages} updateField={updateBillField} />
                     </Grid>
                   </Grid>
                 </CardContent>
               </Card>
             </Grid>
-            <Grid md={6} xs={12}>
+            <Grid size={{ md:6, xs: 12 }}>
               <Card>
                 <CardContent>
                   <Grid container rowSpacing={2} columnSpacing={1}>
-                    <Grid xs={12}>
+                    <Grid size={{ xs: 12 }}>
                       <Typography gutterBottom variant="h6" component="div">{t('bill_format')}</Typography>
                     </Grid>
-                    <Grid xs={4}>
+                    <Grid size={{ xs: 4 }}>
                       <SelectEx fieldId='format.language' value={bill.format?.language ?? 'de'} labelKey='language'
                         itemKeys={['de', 'fr', 'it', 'rm', 'en']} itemsLabelKey='languages' updateField={updateBillField} />
                     </Grid>
-                    <Grid xs={8}>
+                    <Grid size={{ xs: 8 }}>
                     </Grid>
-                    <Grid xs={5}>
+                    <Grid size={{ xs: 5 }}>
                       <SelectEx fieldId='format.outputSize' value={bill.format?.outputSize ?? 'qr-bill-only'} labelKey='output_size'
                         itemKeys={['qr-bill-only', 'a4-portrait-sheet', 'qr-code-only', 'payment-part-only']} itemsLabelKey='output_sizes' updateField={updateBillField} />
                     </Grid>
-                    <Grid xs={7}>
+                    <Grid size={{ xs: 7 }}>
                       <SelectEx fieldId='format.separatorType' value={bill.format?.separatorType ?? 'dashed-line-with-scissors'} labelKey='separator_type'
                         itemKeys={['dashed-line-with-scissors', 'dashed-line', 'dotted-line-with-scissors', 'dotted-line', 'solid-line-with-scissors', 'solid-line', 'none']}
                         itemsLabelKey='separator_types' updateField={updateBillField} />

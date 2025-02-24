@@ -16,7 +16,8 @@ import Examples from './Examples';
 
 test('example can be selected', async () => {
 
-  const selectBill = vi.fn((_: QrBill) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const selectBill = vi.fn((_: QrBill) => {
     // nothing to do in this test
   });
   const user = userEvent.setup();

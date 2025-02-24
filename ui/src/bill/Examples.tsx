@@ -6,7 +6,7 @@
 //
 
 import { Box, Button, Divider, Paper } from "@mui/material";
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid2';
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { ExampleList } from "./example-list";

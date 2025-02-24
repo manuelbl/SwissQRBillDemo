@@ -6,7 +6,7 @@
 //
 
 import { Button, Typography } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid2';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -45,7 +45,7 @@ const Settings = () => {
 
   return (
     <Grid container spacing={2}>
-      <Grid xs={12}><Typography variant='h6'>{t('settingsLanguage')}</Typography></Grid>
+      <Grid size={{ xs: 12 }}><Typography variant='h6'>{t('settingsLanguage')}</Typography></Grid>
       {
         languages.map((lang: Language) => (
           <Grid key={lang.code}>
