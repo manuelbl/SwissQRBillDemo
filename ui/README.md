@@ -26,6 +26,11 @@ Unit tests can be run with:
 yarn test
 ```
 
+Or for a single run only:
+
+```
+yarn ci
+```
 
 ## Lint
 
