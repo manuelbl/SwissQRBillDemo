@@ -30,15 +30,7 @@
   <dependencies>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-rest</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
       <artifactId>quarkus-rest-jackson</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-arc</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -151,13 +143,9 @@
               <generateSupportingFiles>false</generateSupportingFiles>
               <generateApiTests>false</generateApiTests>
               <generateApiDocumentation>false</generateApiDocumentation>
-              <auth>false</auth>
               <typeMappings>
-                <typeMapping>string+binary=Response</typeMapping>
+                <typeMapping>File=jakarta.ws.rs.core.Response</typeMapping>
               </typeMappings>
-              <importMappings>
-                <importMapping>Response=jakarta.ws.rs.core.Response</importMapping>
-              </importMappings>
             </configuration>
           </execution>
         </executions>
