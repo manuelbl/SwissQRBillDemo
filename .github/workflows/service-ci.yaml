@@ -3,7 +3,7 @@ name: Backend service CI
 on: [push, pull_request]
 
 env:
-  MAVEN_ARGS: -B -V -ntp -e -Djansi.passthrough=true -Dstyle.color=always
+  MAVEN_ARGS: --batch-mode --errors -Djansi.passthrough=true -Dstyle.color=always
 
 jobs:
 
@@ -23,6 +23,7 @@ jobs:
           project_version=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`
           echo "Project version: $project_version"
           echo "project_version=$project_version" >> $GITHUB_OUTPUT
+        working-directory: ./service
       - name: Docker login
         uses: docker/login-action@v2.1.0
         with:
@@ -30,7 +31,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build native Quarkus image
-        run: mvn $MAVEN_ARGS --batch-mode --update-snapshots -Dnative -DskipTests -Dquarkus.native.container-build=true install
+        run: mvn $MAVEN_ARGS --show-version -Dnative -DskipTests -Dquarkus.native.container-build=true install
         working-directory: ./service
       - name: Build and push docker image
         run: |
