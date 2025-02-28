@@ -38,3 +38,4 @@ jobs:
           tag=ghcr.io/manuelbl/qrbill/qrbill-service:${{ steps.version.outputs.project_version }}-snapshot
           docker build --file=src/main/docker/Dockerfile.native-micro --tag=$tag --output=type=docker .
           docker push $tag
+        working-directory: ./service
