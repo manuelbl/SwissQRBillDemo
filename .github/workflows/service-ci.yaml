@@ -22,7 +22,7 @@ jobs:
         run: |
           project_version=`mvn help:evaluate -Dexpression=project.version -q -DforceStdout`
           echo "Project version: $project_version"
-          if [[ "${{ github.ref }}" ~= ^/refs/tags/.* ]]; then
+          if [[ "${{ github.ref }}" =~ ^/refs/tags/.* ]]; then
             tag=ghcr.io/manuelbl/qrbill/qrbill-service:${project_version}
           else
             tag=ghcr.io/manuelbl/qrbill/qrbill-service:${project_version}-snapshot
