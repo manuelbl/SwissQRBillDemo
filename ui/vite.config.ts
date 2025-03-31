@@ -1,9 +1,12 @@
-/// <reference types="vitest" />
+import type { InlineConfig } from 'vitest/node';
+import type { UserConfig } from 'vite';
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+type ViteConfig = UserConfig & { test: InlineConfig };
+
 // https://vite.dev/config/
-export default defineConfig({
+const config: ViteConfig = {
   plugins: [react()],
 
   base: '/qrbill/',
@@ -26,4 +29,6 @@ export default defineConfig({
   build: {
     chunkSizeWarningLimit: 700,
   },
-})
+};
+
+export default defineConfig(config);
