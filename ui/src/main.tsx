@@ -7,7 +7,7 @@
 
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter} from 'react-router';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { baseTheme } from './app/theme';
 import App from './app/App';

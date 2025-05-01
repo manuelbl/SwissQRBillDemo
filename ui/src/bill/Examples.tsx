@@ -6,9 +6,9 @@
 //
 
 import { Box, Button, Divider, Paper } from "@mui/material";
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { ExampleList } from "./example-list";
 import { QrBill } from "../qrbill-api/qrbill";
 

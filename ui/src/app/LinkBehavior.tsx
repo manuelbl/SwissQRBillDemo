@@ -6,7 +6,7 @@
 //
 
 import { forwardRef } from 'react';
-import { Link as RouterLink, LinkProps as RouterLinkProps } from 'react-router-dom';
+import { Link as RouterLink, LinkProps as RouterLinkProps } from 'react-router';
 
 /**
  * Forward ref to HTML 'a' element, replacing 'href' with 'to'

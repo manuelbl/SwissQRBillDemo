@@ -7,7 +7,7 @@
 
 import { ThemeProvider } from '@mui/material'
 import { baseTheme } from './theme'
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter } from 'react-router'
 
 export const TestProviders = ({children}: {children: React.ReactNode}) => {
   return (

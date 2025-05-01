@@ -6,7 +6,7 @@
 //
 
 import { useState } from 'react';
-import { Navigate, useRoutes } from 'react-router-dom';
+import { Navigate, useRoutes } from 'react-router';
 import { Box, Toolbar } from '@mui/material';
 import { ExampleList } from '../bill/example-list';
 import { QrBill } from '../qrbill-api/qrbill';

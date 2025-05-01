@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, Autocomplete, Box, Button, Card, CardContent, FormControl, FormGroup, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
-import Grid from '@mui/material/Grid2';
+import Grid from '@mui/material/Grid';
 import { useTranslation } from 'react-i18next';
 import { QrBill } from '../qrbill-api/qrbill';
 import { validateBill } from '../qrbill-api/qrbill-api';
