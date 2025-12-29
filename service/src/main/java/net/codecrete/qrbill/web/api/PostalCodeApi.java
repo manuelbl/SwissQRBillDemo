@@ -6,7 +6,6 @@
 //
 package net.codecrete.qrbill.web.api;
 
-import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 
 import java.util.List;
@@ -14,8 +13,11 @@ import java.util.List;
 @Path(value = "/postal-codes")
 public class PostalCodeApi {
 
-    @Inject
-    PostalCodeData postalCodeData;
+    private final PostalCodeData postalCodeData;
+
+    public PostalCodeApi(PostalCodeData postalCodeData) {
+        this.postalCodeData = postalCodeData;
+    }
 
     @GET
     @Path("/suggest")

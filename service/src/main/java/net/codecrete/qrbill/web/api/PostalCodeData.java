@@ -111,7 +111,7 @@ public class PostalCodeData {
      * Searches the array for the specified postal code.
      * <p>
      * In contrast to {@link Arrays#binarySearch(Object[], Object)}, the first
-     * matching element is returned if the the array contains several matching ones.
+     * matching element is returned if the array contains several matching ones.
      * </p>
      *
      * @param a          the array to be searched (must be sorted in ascending
@@ -143,11 +143,11 @@ public class PostalCodeData {
      * Searches the array for the specified town.
      * <p>
      * In contrast to {@link Arrays#binarySearch(Object[], Object)}, the first
-     * matching element is returned if the the array contains several matching ones.
+     * matching element is returned if the array contains several matching ones.
      * </p>
      *
      * @param a    the array to be searched (must be sorted in ascending order)
-     * @param town the towb to search for
+     * @param town the town to search for
      * @return the index of the first matching element (if found) or the index where
      * the element would need to be inserted to retain the order (if not
      * found)
