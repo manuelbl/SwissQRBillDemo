@@ -24,9 +24,9 @@
 #
 ###
 # First stage - install the dependencies in an intermediate container
-FROM registry.access.redhat.com/ubi8/ubi-minimal:8.9 AS build
+FROM registry.access.redhat.com/ubi9/ubi-minimal:9.6 AS build
 ARG fonts_version=2.1.3-5.el9
-RUN microdnf --assumeyes install freetype fontconfig \
+RUN microdnf --assumeyes install freetype fontconfig expat \
   # https://en.wikipedia.org/wiki/Liberation_fonts
   && rpm --install --noverify \
     https://dl.rockylinux.org/pub/rocky/9/AppStream/x86_64/os/Packages/l/liberation-fonts-common-${fonts_version}.noarch.rpm \
@@ -38,13 +38,13 @@ RUN microdnf --assumeyes install freetype fontconfig \
     https://dl.rockylinux.org/pub/rocky/9/AppStream/x86_64/os/Packages/l/liberation-mono-fonts-${fonts_version}.noarch.rpm \
   && rpm --install --noverify \
     https://dl.rockylinux.org/pub/rocky/9/AppStream/x86_64/os/Packages/l/liberation-fonts-${fonts_version}.noarch.rpm \
-  # remove default dejaVue fonts
+  # remove default dejaVu fonts
   && rpm -e --nodeps dejavu-sans-fonts \
   # https://wiki.archlinux.org/title/font_configuration \
   && fc-cache -v
 
 # Second stage - copy the dependencies
-FROM quay.io/quarkus/quarkus-micro-image:2.0
+FROM quay.io/quarkus/ubi9-quarkus-micro-image:2.0
 COPY --from=build \
    /lib64/libfreetype.so.6 \
    /lib64/libgcc_s.so.1 \
