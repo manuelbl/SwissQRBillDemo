@@ -46,7 +46,7 @@ quarkus build --native -Dquarkus.native.container-build=true -Dquarkus.native.co
 Build docker image:
 
 ```shell
- buildx build --file=src/main/docker/Dockerfile.native-micro --tag=qrbill/qrbill-service --output=type=docker .
+docker buildx build --file=src/main/docker/Dockerfile.native-micro --tag=qrbill/qrbill-service --output=type=docker .
 ```
 
 Run it locally:
