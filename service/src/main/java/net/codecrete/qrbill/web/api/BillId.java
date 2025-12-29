@@ -9,6 +9,7 @@ package net.codecrete.qrbill.web.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.codecrete.qrbill.generator.Bill;
 import net.codecrete.qrbill.generator.QRBill;
+import net.codecrete.qrbill.generator.SPSCharacterSet;
 import net.codecrete.qrbill.web.model.BillFormat;
 
 import java.io.ByteArrayInputStream;
@@ -96,12 +97,13 @@ public class BillId {
             ObjectMapper mapper = new ObjectMapper();
             payload = mapper.readValue(head, BillPayload.class);
 
-        } catch (Exception e) {
+        } catch (Exception _) {
             return null; // invalid ID
         }
 
         Bill bill = QRBill.decodeQrCodeText(payload.getQrText());
         bill.setFormat(DtoConverter.fromDtoBillFormat(payload.getFormat()));
+        bill.setCharacterSet(SPSCharacterSet.EXTENDED_LATIN);
         return bill;
     }
 }

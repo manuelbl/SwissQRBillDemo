@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.codecrete.qrbill</groupId>
   <artifactId>qrbill-service</artifactId>
-  <version>3.3.9</version>
+  <version>3.3.10</version>
   <properties>
     <compiler-plugin.version>3.14.1</compiler-plugin.version>
     <maven.compiler.release>25</maven.compiler.release>
@@ -138,6 +138,7 @@
                 <interfaceOnly>true</interfaceOnly>
                 <useJakartaEe>true</useJakartaEe>
                 <openApiNullable>false</openApiNullable>
+                <containerDefaultToNull>true</containerDefaultToNull>
               </configOptions>
               <apiPackage>net.codecrete.qrbill.web.api</apiPackage>
               <modelPackage>net.codecrete.qrbill.web.model</modelPackage>

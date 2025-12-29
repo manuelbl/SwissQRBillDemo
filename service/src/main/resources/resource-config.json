@@ -9,6 +9,9 @@
       },
       {
         "pattern": "org/apache/pdfbox/resources/afm/.*\\.afm"
+      },
+      {
+        "pattern": "org/apache/fontbox/cmap/Identity-H"
       }
     ]
   }

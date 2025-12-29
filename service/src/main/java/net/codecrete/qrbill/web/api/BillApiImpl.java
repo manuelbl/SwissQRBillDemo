@@ -38,6 +38,7 @@ public class BillApiImpl implements BillApi {
         ValidationResult result;
         try {
             Bill bill = QRBill.decodeQrCodeText(qrCodeInformation.getText());
+            bill.setCharacterSet(SPSCharacterSet.EXTENDED_LATIN);
             result = QRBill.validate(bill);
         } catch (QRBillValidationError e) {
             result = e.getValidationResult();
@@ -63,7 +64,7 @@ public class BillApiImpl implements BillApi {
                         .build();
             setFormatDefaults(bill);
 
-        } catch (Exception e) {
+        } catch (Exception _) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("Invalid bill ID. Validate bill data to get a valid ID")
                     .build();
@@ -218,16 +219,16 @@ public class BillApiImpl implements BillApi {
 
         for (Locale locale : httpHeaders.getAcceptableLanguages()) {
             String language = locale.getLanguage();
-            if ("en".equals(language))
-                return Language.EN;
-            if ("de".equals(language))
-                return Language.DE;
-            if ("fr".equals(language))
-                return Language.FR;
-            if ("it".equals(language))
-                return Language.IT;
-            if ("rm".equals(language))
-                return Language.RM;
+            var lang = switch (language) {
+                case "en" -> Language.EN;
+                case "de" -> Language.DE;
+                case "fr" -> Language.FR;
+                case "it" -> Language.IT;
+                case "rm" -> Language.RM;
+                default -> null;
+            };
+            if (lang != null)
+                return lang;
         }
 
         return null;

@@ -52,5 +52,5 @@ docker buildx build --file=src/main/docker/Dockerfile.native-micro --tag=qrbill/
 Run it locally:
 
 ```shell
-docker run -i --rm  -e QUARKUS_HTTP_CORS='false' -p 8081:8081 qrbill/qrbill-service
+docker run -i --rm  -e QUARKUS_HTTP_CORS_ENABLED='false' -p 8081:8081 qrbill/qrbill-service
 ```
