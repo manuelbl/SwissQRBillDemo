@@ -24,7 +24,7 @@
 #
 ###
 # First stage - install the dependencies in an intermediate container
-FROM registry.access.redhat.com/ubi9/ubi-minimal:9.6 AS build
+FROM registry.access.redhat.com/ubi9/ubi-minimal:9.7 AS build
 ARG fonts_version=2.1.3-5.el9
 RUN microdnf --assumeyes install freetype fontconfig expat \
   # https://en.wikipedia.org/wiki/Liberation_fonts

@@ -32,13 +32,13 @@ You can create a native executable using:
 
 Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
 ```shell
-./mvnw package -Dnative -Dquarkus.native.container-build=true
+./mvnw package -Dnative -Dquarkus.native.container-build=true -Dquarkus.native.builder-image=quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-25
 ```
 
 Actually used command:
 
 ```shell
-quarkus build --native -Dquarkus.native.container-build=true -Dquarkus.native.container-runtime=podman
+quarkus build --native -Dquarkus.native.container-build=true -Dquarkus.native.builder-image=quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-25 -Dquarkus.native.container-runtime=podman
 ```
 
 ## Creating a docker image
