@@ -42,6 +42,7 @@ export function cloneBill(bill: QrBill): QrBill {
     billInformation: bill.billInformation,
     debtor: bill.debtor !== undefined ? Object.assign({}, bill.debtor) : undefined,
     format: bill.format !== undefined ? Object.assign({}, bill.format) : undefined,
+    characterSet: bill.characterSet,
   };
 }
 

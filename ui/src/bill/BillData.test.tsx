@@ -39,6 +39,7 @@ const sampleBill: QrBill = {
   currency: 'CHF',
   format: sampleFormat,
   reference: '',
+  characterSet: 'extended-latin',
 };
 
 const mockValidationResponse: ValidationResponse = {

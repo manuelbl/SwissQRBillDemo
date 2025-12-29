@@ -19,4 +19,5 @@ export class QrBill {
   billInformation?: string;
   debtor?: Address;
   format?: BillFormat;
+  characterSet?: string = 'extended-latin';
 }

@@ -32,6 +32,7 @@ const sampleBill: QrBill = {
   creditor: sampleAddress,
   currency: 'CHF',
   format: sampleFormat,
+  characterSet: 'extended-latin',
 };
 
 test('updateBillField() returns modified copy', () => {
