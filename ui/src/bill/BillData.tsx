@@ -57,6 +57,20 @@ const BillData = ({ bill, updateField }: BillDataProps) => {
     return 'unknown error';
   }
 
+  /**
+   * Extract the error messages from the validation response
+   * @param validationResponse  validation response
+   */
+  const extractErrorMessages = (validationResponse: ValidationResponse) => {
+    const messages: Record<string, string> = {};
+    if (validationResponse.validationMessages) {
+      validationResponse.validationMessages
+        .filter(e => e.type === 'Error')
+        .forEach(e => messages[e.field ?? 'x'] = e.message ?? 'x');
+    }
+    setErrorMessages(messages);
+  }
+
   // Asynchronously validate bill on server-side
   const validateData = useCallback((bill: QrBill) => {
     validateBill(bill, i18n.language)
@@ -76,20 +90,6 @@ const BillData = ({ bill, updateField }: BillDataProps) => {
    */
   const updateBillField = (path: string, newValue: BillValue) => {
     updateField(path, newValue);
-  }
-
-  /**
-   * Extract the error messages from the validation response
-   * @param validationResponse  validation response
-   */
-  const extractErrorMessages = (validationResponse: ValidationResponse) => {
-    const messages: Record<string, string> = {};
-    if (validationResponse.validationMessages) {
-      validationResponse.validationMessages
-        .filter(e => e.type === 'Error')
-        .forEach(e => messages[e.field ?? 'x'] = e.message ?? 'x');
-    }
-    setErrorMessages(messages);
   }
 
 
