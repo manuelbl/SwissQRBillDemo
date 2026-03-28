@@ -6,7 +6,7 @@ This project uses Quarkus framework, version 3.
 
 You can run your application in dev mode that enables live coding using:
 ```shell
-./mvnw compile quarkus:dev
+./mvnw quarkus:dev
 ```
 
 A Dev UI is available in dev mode at http://localhost:8081/qrbill-api/q/dev/.
@@ -18,10 +18,16 @@ The application can be packaged using:
 ```shell
 ./mvnw package
 ```
-It produces the `qrbill-service-x.x.x-runner.jar` file in the `target/` directory.
-It is an _über-jar_ including all the dependencies.
+It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
+Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
 
-The application is now runnable using `java -jar target/qrbill-service-x.x.x-runner.jar`.
+The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
+
+If you want to build an _über-jar_, execute the following command:
+
+```shell script
+./mvnw package -Dquarkus.package.jar.type=uber-jar
+```
 
 ## Creating a native executable
 
@@ -32,21 +38,19 @@ You can create a native executable using:
 
 Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
 ```shell
-./mvnw package -Dnative -Dquarkus.native.container-build=true -Dquarkus.native.builder-image=quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-25
+./mvnw package -Dnative -Dquarkus.native.container-build=true
 ```
 
-Actually used command:
+Docker or Podman must be installed and running on your machine. The resulting image
+is a Linux image.
 
-```shell
-quarkus build --native -Dquarkus.native.container-build=true -Dquarkus.native.builder-image=quay.io/quarkus/ubi9-quarkus-mandrel-builder-image:jdk-25 -Dquarkus.native.container-runtime=podman
-```
 
 ## Creating a docker image
 
 Build docker image:
 
 ```shell
-docker buildx build --file=src/main/docker/Dockerfile.native-micro --tag=qrbill/qrbill-service --output=type=docker .
+docker build --file=src/main/docker/Dockerfile.native-micro --tag=qrbill/qrbill-service .
 ```
 
 Run it locally:
