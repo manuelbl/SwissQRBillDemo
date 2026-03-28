@@ -12,15 +12,15 @@
 #
 # or for macOS:
 #
-# quarkus build --native -Dquarkus.native.container-build=true -Dquarkus.native.container-runtime=podman
+# quarkus build --native -Dquarkus.native.container-build=true
 #
 # Then, build the image with:
 #
-# docker buildx build --file=src/main/docker/Dockerfile.native-micro --tag=qrbill/qrbill-service --output=type=docker .
+# docker build --file=src/main/docker/Dockerfile.native-micro --tag=qrbill/qrbill-service .
 #
 # Then run the container using:
 #
-# docker run -i --rm -p 8081:8081 qrbill/qrbill-service
+# docker run -i --rm  -e QUARKUS_HTTP_CORS_ENABLED='false' -p 8081:8081 qrbill/qrbill-service
 #
 ###
 # First stage - install the dependencies in an intermediate container
