@@ -26,14 +26,13 @@ const root = ReactDOM.createRoot(
 //
 root.render(
   <React.StrictMode>
-    <CssBaseline>
-      <BrowserRouter basename='/qrbill'>
-        <ThemeProvider theme={baseTheme}>
-          <Suspense fallback='loading'>
-            <App />
-          </Suspense>
-        </ThemeProvider>
-      </BrowserRouter>
-    </CssBaseline>
+    <BrowserRouter basename='/qrbill'>
+      <ThemeProvider theme={baseTheme}>
+        <CssBaseline />
+        <Suspense fallback='loading'>
+          <App />
+        </Suspense>
+      </ThemeProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );

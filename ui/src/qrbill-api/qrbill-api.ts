@@ -8,15 +8,16 @@
 import { QrBill } from "./qrbill";
 import { ValidationResponse } from "./validation-response";
 
-export async function validateBill(bill: QrBill, language: string): Promise<ValidationResponse> {
+export async function validateBill(bill: QrBill, language: string, signal?: AbortSignal): Promise<ValidationResponse> {
 
     const response = await window.fetch('/qrbill-api/bill/validated', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'Accept-Language': language,            
+            'Accept-Language': language,
         },
-        body: JSON.stringify(bill)
+        body: JSON.stringify(bill),
+        signal,
     });
 
     if (response.status !== 200)

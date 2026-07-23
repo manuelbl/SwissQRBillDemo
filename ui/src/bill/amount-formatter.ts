@@ -43,6 +43,8 @@ export class AmountFormatter implements FieldFormatter {
       );
     }
     const num = Number(cleanedValue);
+    if (Number.isNaN(num))
+      return undefined;
     return AmountFormatter.rounded(num);
   }
 
@@ -52,15 +54,5 @@ export class AmountFormatter implements FieldFormatter {
     
     const n = AmountFormatter.rounded(Number(rawValue));
     return n.toLocaleString(this.language, { minimumFractionDigits: 2 });
-  }
-
-  editValue(rawValue: number | string | undefined): string {
-    if (rawValue === undefined)
-      return '';
-
-    const n = AmountFormatter.rounded(Number(rawValue));
-    return n
-      .toLocaleString(this.language, { minimumFractionDigits: 2 })
-      .replace(this.cleaner, '');
   }
 }

@@ -5,7 +5,7 @@
 // https://opensource.org/licenses/MIT
 //
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Alert, Autocomplete, Box, Button, Card, CardContent, FormControl, FormGroup, InputLabel, MenuItem, Select, TextField, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useTranslation } from 'react-i18next';
@@ -44,13 +44,18 @@ const BillData = ({ bill, updateField }: BillDataProps) => {
   // Server communication error message
   const [serverError, setServerError] = useState(undefined as string | undefined);
 
+  // Whether the bill has been validated on the server at least once. Until then the submit
+  // button stays disabled so an invalid initial state can't be submitted before the first
+  // validation response arrives.
+  const [isValidated, setIsValidated] = useState(false);
+
   const { t, i18n } = useTranslation();
 
   // Amount formatter (dependent on currently selected language)
   const amountFormatter = useMemo(() => new AmountFormatter(i18n.language + '-CH'), [i18n.language]);
 
   const extractReasonMessage = (reason: unknown) => {
-    if (typeof reason === 'object') {
+    if (reason && typeof reason === 'object') {
       const err = reason as { message?: string };
       return err.message ?? 'unknown error';
     }
@@ -71,27 +76,23 @@ const BillData = ({ bill, updateField }: BillDataProps) => {
     setErrorMessages(messages);
   }
 
-  // Asynchronously validate bill on server-side
-  const validateData = useCallback((bill: QrBill) => {
-    validateBill(bill, i18n.language)
-      .then((response) => { extractErrorMessages(response); setServerError(undefined); })
-      .catch((reason) => setServerError(extractReasonMessage(reason)));
-  }, [i18n.language]);
-
-  // Whenever the bill changes, validate it (and on initial display)
+  // Whenever the bill changes, validate it on the server (and on initial display).
+  // The request is aborted if the bill (or language) changes again before it completes,
+  // preventing stale, out-of-order responses from overwriting the current state.
   useEffect(() => {
-    validateData(bill);
-  }, [bill, validateData]);
-
-  /**
-   * Update a single field in the bill data
-   * @param path path within `bill` (= field ID)
-   * @param newValue new value
-   */
-  const updateBillField = (path: string, newValue: BillValue) => {
-    updateField(path, newValue);
-  }
-
+    const controller = new AbortController();
+    validateBill(bill, i18n.language, controller.signal)
+      .then((response) => {
+        extractErrorMessages(response);
+        setServerError(undefined);
+        setIsValidated(true);
+      })
+      .catch((reason) => {
+        if (!controller.signal.aborted)
+          setServerError(extractReasonMessage(reason));
+      });
+    return () => controller.abort();
+  }, [bill, i18n.language]);
 
   // State to open and close preview
   const [isPreviewOpen, setPreviewOpen] = useState(false);
@@ -133,25 +134,25 @@ const BillData = ({ bill, updateField }: BillDataProps) => {
                       <Typography gutterBottom variant="h6" component="div">{t('account_payable_to')}</Typography>
                     </Grid>
                     <Grid size={{ xs: 12 }}>
-                      <FormattedTextEnh fieldId='account' value={bill.account} labelKey='account' errorMessages={errorMessages} updateField={updateBillField} formatter={ibanFormatter} required />
+                      <FormattedTextEnh fieldId='account' value={bill.account} labelKey='account' errorMessages={errorMessages} updateField={updateField} formatter={ibanFormatter} required />
                     </Grid>
                     <Grid size={{ xs: 12 }}>
-                      <FormattedTextEnh fieldId='creditor.name' value={bill.creditor?.name} labelKey='name' errorMessages={errorMessages} updateField={updateBillField} required />
+                      <FormattedTextEnh fieldId='creditor.name' value={bill.creditor?.name} labelKey='name' errorMessages={errorMessages} updateField={updateField} required />
                     </Grid>
                     <Grid size={{ xs: 9 }}>
-                      <FormattedTextEnh fieldId='creditor.street' value={bill.creditor?.street} labelKey='street' errorMessages={errorMessages} updateField={updateBillField} />
+                      <FormattedTextEnh fieldId='creditor.street' value={bill.creditor?.street} labelKey='street' errorMessages={errorMessages} updateField={updateField} />
                     </Grid>
                     <Grid size={{ xs: 3 }}>
-                      <FormattedTextEnh fieldId='creditor.houseNo' value={bill.creditor?.houseNo} labelKey='house_number' errorMessages={errorMessages} updateField={updateBillField} />
+                      <FormattedTextEnh fieldId='creditor.houseNo' value={bill.creditor?.houseNo} labelKey='house_number' errorMessages={errorMessages} updateField={updateField} />
                     </Grid>
                     <Grid size={{ xs: 2 }}>
-                      <FormattedTextEnh fieldId='creditor.countryCode' value={bill.creditor?.countryCode} labelKey='country' errorMessages={errorMessages} updateField={updateBillField} required />
+                      <FormattedTextEnh fieldId='creditor.countryCode' value={bill.creditor?.countryCode} labelKey='country' errorMessages={errorMessages} updateField={updateField} required />
                     </Grid>
                     <Grid size={{ xs: 3 }}>
-                      <FormattedTextEnh fieldId='creditor.postalCode' value={bill.creditor?.postalCode} labelKey='postal_code' errorMessages={errorMessages} updateField={updateBillField} required />
+                      <FormattedTextEnh fieldId='creditor.postalCode' value={bill.creditor?.postalCode} labelKey='postal_code' errorMessages={errorMessages} updateField={updateField} required />
                     </Grid>
                     <Grid size={{ xs: 7 }}>
-                      <FormattedTextEnh fieldId='creditor.town' value={bill.creditor?.town} labelKey='town' errorMessages={errorMessages} updateField={updateBillField} required />
+                      <FormattedTextEnh fieldId='creditor.town' value={bill.creditor?.town} labelKey='town' errorMessages={errorMessages} updateField={updateField} required />
                     </Grid>
                   </Grid>
                 </CardContent>
@@ -165,19 +166,19 @@ const BillData = ({ bill, updateField }: BillDataProps) => {
                       <Typography gutterBottom variant="h6" component="div">{t('payment_details')}</Typography>
                     </Grid>
                     <Grid size={{ xs: 3 }}>
-                      <SelectEx fieldId='currency' value={bill.currency ?? 'CHF'} labelKey='currency' itemKeys={['CHF', 'EUR']} itemsLabelKey='currencies' updateField={updateBillField} />
+                      <SelectEx fieldId='currency' value={bill.currency ?? 'CHF'} labelKey='currency' itemKeys={['CHF', 'EUR']} itemsLabelKey='currencies' updateField={updateField} />
                     </Grid>
                     <Grid size={{ xs: 4 }}>
-                      <FormattedTextEnh fieldId='amount' value={bill.amount} isNumeric={true} labelKey='amount' errorMessages={errorMessages} updateField={updateBillField} formatter={amountFormatter} />
+                      <FormattedTextEnh fieldId='amount' value={bill.amount} isNumeric={true} labelKey='amount' errorMessages={errorMessages} updateField={updateField} formatter={amountFormatter} />
                     </Grid>
                     <Grid size={{ xs: 12 }}>
-                      <ReferenceAutoComplete value={bill.reference} account={bill.account} errorMessages={errorMessages} updateField={updateBillField} />
+                      <ReferenceAutoComplete value={bill.reference} account={bill.account} errorMessages={errorMessages} updateField={updateField} />
                     </Grid>
                     <Grid size={{ xs: 12 }}>
-                      <FormattedTextEnh fieldId='unstructuredMessage' value={bill.unstructuredMessage} labelKey='unstructured_msg' errorMessages={errorMessages} updateField={updateBillField} />
+                      <FormattedTextEnh fieldId='unstructuredMessage' value={bill.unstructuredMessage} labelKey='unstructured_msg' errorMessages={errorMessages} updateField={updateField} />
                     </Grid>
                     <Grid size={{ xs: 12 }}>
-                      <FormattedTextEnh fieldId='billInformation' value={bill.billInformation} labelKey='bill_information' errorMessages={errorMessages} updateField={updateBillField} />
+                      <FormattedTextEnh fieldId='billInformation' value={bill.billInformation} labelKey='bill_information' errorMessages={errorMessages} updateField={updateField} />
                     </Grid>
                   </Grid>
                 </CardContent>
@@ -191,22 +192,22 @@ const BillData = ({ bill, updateField }: BillDataProps) => {
                       <Typography gutterBottom variant="h6" component="div">{t('payable_by')}</Typography>
                     </Grid>
                     <Grid size={{ xs: 12 }}>
-                      <FormattedTextEnh fieldId='debtor.name' value={bill.debtor?.name} labelKey='name' errorMessages={errorMessages} updateField={updateBillField} />
+                      <FormattedTextEnh fieldId='debtor.name' value={bill.debtor?.name} labelKey='name' errorMessages={errorMessages} updateField={updateField} />
                     </Grid>
                     <Grid size={{ xs: 9 }}>
-                      <FormattedTextEnh fieldId='debtor.street' value={bill.debtor?.street} labelKey='street' errorMessages={errorMessages} updateField={updateBillField} />
+                      <FormattedTextEnh fieldId='debtor.street' value={bill.debtor?.street} labelKey='street' errorMessages={errorMessages} updateField={updateField} />
                     </Grid>
                     <Grid size={{ xs: 3 }}>
-                      <FormattedTextEnh fieldId='debtor.houseNo' value={bill.debtor?.houseNo} labelKey='house_number' errorMessages={errorMessages} updateField={updateBillField} />
+                      <FormattedTextEnh fieldId='debtor.houseNo' value={bill.debtor?.houseNo} labelKey='house_number' errorMessages={errorMessages} updateField={updateField} />
                     </Grid>
                     <Grid size={{ xs: 2 }}>
-                      <FormattedTextEnh fieldId='debtor.countryCode' value={bill.debtor?.countryCode} labelKey='country' errorMessages={errorMessages} updateField={updateBillField} />
+                      <FormattedTextEnh fieldId='debtor.countryCode' value={bill.debtor?.countryCode} labelKey='country' errorMessages={errorMessages} updateField={updateField} />
                     </Grid>
                     <Grid size={{ xs: 3 }}>
-                      <FormattedTextEnh fieldId='debtor.postalCode' value={bill.debtor?.postalCode} labelKey='postal_code' errorMessages={errorMessages} updateField={updateBillField} />
+                      <FormattedTextEnh fieldId='debtor.postalCode' value={bill.debtor?.postalCode} labelKey='postal_code' errorMessages={errorMessages} updateField={updateField} />
                     </Grid>
                     <Grid size={{ xs: 7 }}>
-                      <FormattedTextEnh fieldId='debtor.town' value={bill.debtor?.town} labelKey='town' errorMessages={errorMessages} updateField={updateBillField} />
+                      <FormattedTextEnh fieldId='debtor.town' value={bill.debtor?.town} labelKey='town' errorMessages={errorMessages} updateField={updateField} />
                     </Grid>
                   </Grid>
                 </CardContent>
@@ -221,18 +222,18 @@ const BillData = ({ bill, updateField }: BillDataProps) => {
                     </Grid>
                     <Grid size={{ xs: 4 }}>
                       <SelectEx fieldId='format.language' value={bill.format?.language ?? 'de'} labelKey='language'
-                        itemKeys={['de', 'fr', 'it', 'rm', 'en']} itemsLabelKey='languages' updateField={updateBillField} />
+                        itemKeys={['de', 'fr', 'it', 'rm', 'en']} itemsLabelKey='languages' updateField={updateField} />
                     </Grid>
                     <Grid size={{ xs: 8 }}>
                     </Grid>
                     <Grid size={{ xs: 5 }}>
                       <SelectEx fieldId='format.outputSize' value={bill.format?.outputSize ?? 'qr-bill-only'} labelKey='output_size'
-                        itemKeys={['qr-bill-only', 'a4-portrait-sheet', 'qr-code-only', 'payment-part-only']} itemsLabelKey='output_sizes' updateField={updateBillField} />
+                        itemKeys={['qr-bill-only', 'a4-portrait-sheet', 'qr-code-only', 'payment-part-only']} itemsLabelKey='output_sizes' updateField={updateField} />
                     </Grid>
                     <Grid size={{ xs: 7 }}>
                       <SelectEx fieldId='format.separatorType' value={bill.format?.separatorType ?? 'dashed-line-with-scissors'} labelKey='separator_type'
                         itemKeys={['dashed-line-with-scissors', 'dashed-line', 'dotted-line-with-scissors', 'dotted-line', 'solid-line-with-scissors', 'solid-line', 'none']}
-                        itemsLabelKey='separator_types' updateField={updateBillField} />
+                        itemsLabelKey='separator_types' updateField={updateField} />
                     </Grid>
                   </Grid>
                 </CardContent>
@@ -242,7 +243,7 @@ const BillData = ({ bill, updateField }: BillDataProps) => {
         </FormGroup>
 
         <Box sx={{ position: 'sticky', bottom: '1rem', float: 'right', width: 'auto' }}>
-          <Button type='submit' variant='contained' disabled={serverError !== undefined || Object.keys(errorMessages).length > 0}>{t('preview_n_download')}</Button>
+          <Button type='submit' variant='contained' disabled={!isValidated || serverError !== undefined || Object.keys(errorMessages).length > 0}>{t('preview_n_download')}</Button>
         </Box>
       </form>
 
@@ -302,6 +303,14 @@ const ReferenceAutoComplete = ({ value, account, errorMessages, updateField }: R
 
   const formattedValue = useMemo(() => referenceFormatter.formattedValue(value), [value]);
   const [editValue, setEditValue] = useState(formattedValue);
+  // Re-sync the edit buffer whenever the prop-derived value changes (e.g. an external reset,
+  // cross-field derivation or programmatic fill), so the field never displays stale text.
+  // This is React's "adjust state during render" pattern rather than a useEffect.
+  const [lastFormattedValue, setLastFormattedValue] = useState(formattedValue);
+  if (formattedValue !== lastFormattedValue) {
+    setLastFormattedValue(formattedValue);
+    setEditValue(formattedValue);
+  }
   const [options, setOptions] = useState<readonly string[]>([]);
 
   const { t } = useTranslation();

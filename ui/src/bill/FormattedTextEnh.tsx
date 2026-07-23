@@ -52,6 +52,14 @@ const FormattedTextEnh = ({ fieldId, value, required = false, isNumeric = false,
 
   const formattedValue = useMemo(() => formatter.formattedValue(value), [value, formatter]);
   const [editValue, setEditValue] = useState(formattedValue);
+  // Re-sync the edit buffer whenever the prop-derived value changes (e.g. an external reset,
+  // cross-field derivation or programmatic fill), so the field never displays stale text.
+  // This is React's "adjust state during render" pattern rather than a useEffect.
+  const [lastFormattedValue, setLastFormattedValue] = useState(formattedValue);
+  if (formattedValue !== lastFormattedValue) {
+    setLastFormattedValue(formattedValue);
+    setEditValue(formattedValue);
+  }
 
   const { t } = useTranslation();
 
@@ -73,7 +81,7 @@ const FormattedTextEnh = ({ fieldId, value, required = false, isNumeric = false,
       title={isNumeric ? t('enter_number') ?? '' : ''}
       fullWidth variant="outlined" size="small"
       required={required}
-      inputProps={isNumeric ? { inputMode: 'numeric', pattern: '[0-9.,\'’]*' } : {}} />
+      slotProps={isNumeric ? { htmlInput: { inputMode: 'numeric', pattern: '[0-9.,\'’]*' } } : {}} />
   );
 }
 

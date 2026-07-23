@@ -62,7 +62,7 @@ const PreviewDialog = ({ billId, isOpen, outputSize, close } :PreviewDialogProps
     imageHeight = '1122.519';
     imageAltKey = 'img_qrbill_sheet';
     dummyImage = a4PortraitDummyImage;
-  } else if (outputSize == 'qr-code-only') {
+  } else if (outputSize === 'qr-code-only') {
     imageWidth = '173.858';
     imageHeight = '173.858';
     imageAltKey = 'img_qrcode';

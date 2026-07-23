@@ -27,6 +27,8 @@ test('amount unformatting de-CH works', () => {
   expect(formatter.rawValue("12’345.67")).toBe(12345.67);
   expect(formatter.rawValue("12'345.67")).toBe(12345.67);
   expect(formatter.rawValue('567.892')).toBe(567.89);
+  expect(formatter.rawValue('1.2.3')).toBe(undefined);
+  expect(formatter.rawValue('.')).toBe(undefined);
 });
 
 test('amount formatting de-DE works', () => {
@@ -39,5 +41,6 @@ test('amount unformatting de-DE works', () => {
   const formatter = new AmountFormatter('de-DE');
   expect(formatter.rawValue('5,12')).toBe(5.12);
   expect(formatter.rawValue("12.345,67")).toBe(12345.67);
+  expect(formatter.rawValue('1,2,3')).toBe(undefined);
 });
 

@@ -24,7 +24,7 @@ import './App.css';
 const App = () => {
 
   // QR bill data being edited
-  const [bill, setBill] = useState(ExampleList[0].bill);
+  const [bill, setBill] = useState(() => cloneBill(ExampleList[0].bill));
 
   /**
    * Updates a single field in the state.
