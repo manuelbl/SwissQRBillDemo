@@ -41,7 +41,7 @@ const Examples = ({ selectBill }: ExampleProps) => {
           <Paper key={ex.billID} sx={{marginTop: '1rem'}}>
             <img className="qr-bill" src={`/qrbill-api/bill/image/${ex.billID}`} alt={`${t('qrbill_example', { num: index + 1})}`} />
             <Divider />
-            <Grid container justifyContent='end'>
+            <Grid container sx={{justifyContent: 'end'}}>
               <Grid sx={{padding: '0.5rem 1rem'}}>
                 <Button variant="contained" onClick={() => onBillSelected(ex.bill)}>{t('select')}</Button>
               </Grid>
